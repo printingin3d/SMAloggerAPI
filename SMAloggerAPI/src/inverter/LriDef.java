@@ -65,22 +65,20 @@ public enum LriDef
 	GridMsPhVphsB2C6100             ( 0x00464C00),
 	GridMsPhVphsC2A6100             ( 0x00464D00);
     
-    private static LriDef[] enumValues = values();
-    
-    public static LriDef intToEnum(int value)
-    {
-        for(int i = 0; i < enumValues.length; i++)
-        {
-        	if(enumValues[i].Value == value)
-        		return enumValues[i];
-        }
+    public static LriDef intToEnum(int value) {
+    	for (LriDef lri : values()) {
+    		if (lri.value == value) {
+				return lri;
+			}
+    	}
+
         return null;
     }
     
-    private int Value;
+    private int value;
     
     private LriDef(int value)
     {
-    	this.Value = value;
+    	this.value = value;
     }
 }

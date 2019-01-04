@@ -35,22 +35,19 @@ public enum InvDeviceClass
      */
     CommunicationProduct ( 8128 );
     
-    private int Value;
+    private int value;
     
-    private static InvDeviceClass[] enumValues = values();
-    
-    public static InvDeviceClass intToEnum(int value)
-    {
-        for(int i = 0; i < enumValues.length; i++)
-        {
-        	if(enumValues[i].Value == value)
-        		return enumValues[i];
+    public static InvDeviceClass intToEnum(int value) {
+    	for (InvDeviceClass i : values()) {
+        	if(i.value == value) {
+				return i;
+			}
         }
         return null;
     }
     
     private InvDeviceClass(int value)
     {
-    	this.Value = value;
+    	this.value = value;
     }
 }

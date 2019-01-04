@@ -14,66 +14,6 @@ public class misc
 	public static final long NaN_U64 = 0xFFFFFFFFFFFFFFFFl;	// "Not a Number" representation for ULONGLONG (converted to 0 by SBFspot)
 	public static final String SYM_DEGREE = "\u00b0"; //"\302\260" for linux ?
 	
-	public static class VERBOSE
-	{
-		private static int verbose;
-		
-		public static void SetVerbose(int verbose)
-		{
-			VERBOSE.verbose = verbose;
-		}
-		
-		public static boolean Low() {
-			return verbose >= 1;
-		}
-		
-		public static boolean Normal() {
-			return verbose >= 2;
-		}
-		
-		public static boolean High() {
-			return verbose >= 3;
-		}
-		
-		public static boolean VeryHigh() {
-			return verbose >= 4;
-		}
-		
-		public static boolean Highest() {
-			return verbose >= 5;
-		}
-	}
-	
-	public final static class DEBUG
-	{
-		private static int debug;
-		
-		public static void SetDebug(int debug)
-		{
-			DEBUG.debug = debug;
-		}
-		
-		public static boolean Low() {
-			return debug >= 1;
-		}
-		
-		public static boolean Normal() {
-			return debug >= 2;
-		}
-		
-		public static boolean High() {
-			return debug >= 3;
-		}
-		
-		public static boolean VeryHigh() {
-			return debug >= 4;
-		}
-		
-		public static boolean Highest() {
-			return debug >= 5;
-		}
-	}
-	
 	public static double tokWh(long value)
 	{
 		return value / 1000d;
@@ -107,11 +47,6 @@ public class misc
 	public static float toHz(long value)
 	{
 		return value / 100f;
-	}
-	
-	public static int intSwap(int i) {
-		//return i;
-	    return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
 	}
 	
 	public static short shortSwap(short s) {
@@ -253,10 +188,11 @@ public class misc
 						System.out.print(((buf[i-ii] >= ' ') && (buf[i-ii] <= '~')) ? buf[i-ii] : '_');
 				}*/
 				
-	            if (radix == 16)
-	            	System.out.printf("\n%08X: ", j);
-	            else
-	            	System.out.printf("\n%08d: ", j);
+	            if (radix == 16) {
+					System.out.printf("\n%08X: ", j);
+				} else {
+					System.out.printf("\n%08d: ", j);
+				}
 	        }
 	        System.out.printf("%02X ", buf[i]);
 	        j++;

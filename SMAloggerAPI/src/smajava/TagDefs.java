@@ -8,10 +8,12 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import smajava.misc.VERBOSE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TagDefs 
-{
+public class TagDefs {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TagDefs.class);
+	
 	final static int READ_OK = 0;
 	final static int READ_ERROR = -1;
 	private static TagDefs instance;
@@ -47,20 +49,9 @@ public class TagDefs
 	
 	private Map<Integer, TD> m_tagdefmap = new HashMap<Integer, TD>();
 	
-	private boolean isverbose(int level)
-	{
-		if(SmaLogger.quiet != 0 && (VERBOSE.Low())) return true;
-		else return false;
-	}
-	
-	private void print_error(String msg)
-	{
-		System.err.println("Error: " + msg + "\n");
-	}
-	
 	private void print_error(String msg, int line, String fpath)
 	{
-		System.err.println("Error: " + msg + " on line " + line + " [" + fpath + "]\n");
+		LOGGER.error(msg + " on line " + line + " [" + fpath + "]\n");
 	}
 	
 	private void add(int tagID, String tag, int lri, String desc)
@@ -82,8 +73,7 @@ public class TagDefs
 		return instance;
 	}
 	
-	public int readall(String locale)
-	{
+	public void readall(String locale) throws IOException {
 		locale = locale.toUpperCase();
 
 		//Build fullpath to taglist<locale>.txt
@@ -92,40 +82,10 @@ public class TagDefs
 
 		InputStream in = getClass().getResourceAsStream(fn_taglist);
 		
-		Reader fr = null;
-		try
-		{
-			 fr = new InputStreamReader(in);
-		}
-		catch(Exception e)
-		{
-			print_error("Could not open file " + fn_taglist);
-			e.printStackTrace();
-			
-			if (!locale.equals("EN-US"))
-			{
-				if (isverbose(0)) System.out.println("Using default locale en-US\n");
-				fn_taglist = "/support_files/TagListEN-US.txt";
-				in = getClass().getResourceAsStream(fn_taglist);
-				
-				try
-				{
-					fr = new InputStreamReader((in));
-				}
-				catch(Exception ex)
-				{
-					print_error("Could not open file " + fn_taglist + e.getMessage());
-					return READ_ERROR;
-				}
-			}
-			
-			else return READ_ERROR;
-		}
-		BufferedReader br = new BufferedReader(fr);
-		String line;
-		int lineCnt = 0;
-		try 
-		{
+		try (Reader fr = new InputStreamReader(in);
+				BufferedReader br = new BufferedReader(fr)) {
+			String line;
+			int lineCnt = 0;
 			while((line = br.readLine()) != null)
 			{
 				lineCnt++;
@@ -136,9 +96,13 @@ public class TagDefs
 				{
 					hashpos = line.indexOf('#');
 				}		
-				if(hashpos == -1) hashpos = line.indexOf('\r');
+				if(hashpos == -1) {
+					hashpos = line.indexOf('\r');
+				}
 				
-				if (hashpos != -1) line = line.substring(0, hashpos);
+				if (hashpos != -1) {
+					line = line.substring(0, hashpos);
+				}
 				
 				if(line.length() > 0)
 				{
@@ -187,24 +151,7 @@ public class TagDefs
 					}
 				}
 			}
-		} 
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		try 
-		{
-			br.close();
-			fr.close();
-		} 
-		catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return READ_OK;
 	}
 	
 	public String getTag(int tagID) 
@@ -217,8 +164,9 @@ public class TagDefs
 		LRI &= 0x00FFFF00;
 		for (Map.Entry<Integer, TD> entry : m_tagdefmap.entrySet())
 		{
-		    if (LRI == entry.getValue().getLRI())
-		    	return entry.getKey();
+		    if (LRI == entry.getValue().getLRI()) {
+				return entry.getKey();
+			}
 		}
 		return 0;
 	}
@@ -228,8 +176,9 @@ public class TagDefs
 		LRI &= 0x00FFFF00;
 		for (Map.Entry<Integer, TD> entry : m_tagdefmap.entrySet())
 		{
-			if (LRI == entry.getValue().getLRI())
+			if (LRI == entry.getValue().getLRI()) {
 				return entry.getValue().getTag();
+			}
 		}
 		return "";
 	}
@@ -239,8 +188,9 @@ public class TagDefs
 		LRI &= 0x00FFFF00;
 		for (Map.Entry<Integer, TD> entry : m_tagdefmap.entrySet())
 		{
-			if (LRI == entry.getValue().getLRI())
+			if (LRI == entry.getValue().getLRI()) {
 				return entry.getValue().getDesc();
+			}
 		}
 		return "";
 	}

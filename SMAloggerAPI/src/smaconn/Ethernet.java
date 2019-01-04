@@ -3,17 +3,15 @@ package smaconn;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 
-import smajava.misc;
-import smajava.misc.DEBUG;
-import smajava.misc.VERBOSE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Ethernet extends SBFNet
-{
-	private int MAX_CommBuf = 0;
+import inverter.Inverter;
+
+public class Ethernet extends SBFNet implements AutoCloseable {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Ethernet.class);
 	
 	private DatagramSocket sock;
 	private short port;
@@ -23,51 +21,32 @@ public class Ethernet extends SBFNet
 	 * @param port The port to connect to.
 	 * @return 0 if success, -1 if connection failed.
 	 */
-	public int Connect(short port)
-	{
-		if (VERBOSE.Normal()) 
-			System.out.println("Initialising Socket...\n");
-		try
-		{
-			sock = new DatagramSocket();
-		}
-		catch(Exception e)
-		{
-			System.err.println("Socket error : " + e.getMessage());
-		}
+	public void connect(short port) throws SocketException {
+		LOGGER.info("Initialising Socket...");
+		sock = new DatagramSocket();
 		
 	    // set up parameters for UDP
 		this.port = port;
-		try 
-		{
-			sock.setBroadcast(true);
-		} 
-		catch (SocketException e) 
-		{
-			System.err.println("Setting broadcast failed\n" + e.getMessage());
-			return -1;
-		}
-	    // end of setting broadcast options
-
-	    return 0; //OK
+		sock.setBroadcast(true);
+	}
+	
+	/**
+	 * Used to manually create an inverter with a given ip adres, this method
+	 * gives the inverter a socket connection used for communication.
+	 * @param ip The ip adress of the inverter.
+	 * @return An inverter with the ip adress and a socket connection.
+	 */
+	public Inverter createInverter(String ip) {
+		return new Inverter(ip, this);
 	}
 	
 	/**
 	 * Disconnects and closes the socket connection.
 	 */
-	public void Close()
-	{
+	@Override
+	public void close() {
 		sock.disconnect();
 		sock.close();
-	}
-	
-	/***
-	 * Clears the buffer and sets packetposition to 0.
-	 */
-	public void ClearBuffer()
-	{
-		this.packetposition = 0;
-		pcktBuf = new byte[maxpcktBufsize];
 	}
 	
 	/***
@@ -75,60 +54,31 @@ public class Ethernet extends SBFNet
 	 * @param buf The buffer the hold the incoming data.
 	 * @return Number of bytes read.
 	 */
-	public int Read(byte[] buf)
-	{
-		boolean keepReading = true;
+	public int read(byte[] buf) throws IOException {
 	    int bytes_read = 0;
 	    short timeout = 5; //5 seconds
 	    
-	    while(keepReading)
-	    {
+	    while (true) {
 	    	DatagramPacket recv = new DatagramPacket(buf, buf.length);
-	    	try 
-	    	{
-				sock.setSoTimeout(timeout * 1000);
-			} 
-	    	catch (SocketException e) 
-	    	{
-	    		if (DEBUG.Highest()) System.out.println("Error setting timeout socket \n" + e.getMessage());
-				return -1;
-			}
-	    	try 
-	    	{
-				sock.receive(recv);
-				bytes_read = recv.getLength();
-			} 
-	    	catch (SocketTimeoutException e1)
-	    	{
-	    		if (DEBUG.Highest()) System.out.println("Timeout reading socket");
-				return -1;
-	    	}
-	    	catch (IOException e) 
-	    	{
-	    		if (DEBUG.Highest()) System.out.println("Error reading socket \n" + e.getMessage());
-				return -1;
-			}	    	
+			sock.setSoTimeout(timeout * 1000);
+			sock.receive(recv);
+			bytes_read = recv.getLength();
 			
 			if ( bytes_read > 0)
 			{
-				if (bytes_read > MAX_CommBuf)
-				{
-					MAX_CommBuf = bytes_read;
-					if (DEBUG.Normal())
-						System.out.printf("MAX_CommBuf is now %d bytes\n", MAX_CommBuf);
+				LOGGER.info("Received {} bytes from IP [{}]", bytes_read, recv.getAddress().getHostAddress());
+		   		if (bytes_read == 600) {
+		   			LOGGER.info(" ==> packet ignored");
 				}
-			   	if (DEBUG.Normal())
-			   	{
-					System.out.printf("Received %d bytes from IP [%s]\n", bytes_read, recv.getAddress().getHostAddress());
-			   		if (bytes_read == 600 || bytes_read == 0)
-			   			System.out.printf(" ==> packet ignored\n");
-				}
+			} else {
+				LOGGER.warn("recvfrom() returned an error: {}", bytes_read);
 			}
-			else
-				System.out.printf("recvfrom() returned an error: %d\n", bytes_read);
 
-			if (bytes_read == 600) timeout--;	// decrease timeout if the packet received within the timeout is an energymeter packet
-			else keepReading = false;
+			if (bytes_read == 600) {
+				timeout--;	// decrease timeout if the packet received within the timeout is an energymeter packet
+			} else {
+				break;
+			}
 	    }
 	    return bytes_read;
 	}
@@ -137,26 +87,13 @@ public class Ethernet extends SBFNet
 	 * Sends what's currently stored in the buffer.
 	 * @param toIP The ip addres to send it to.
 	 * @return The number of bytes sent.
+	 * @throws IOException 
 	 */
-	public int Send(String toIP)
-	{
-		if (DEBUG.High()) 
-			misc.HexDump(pcktBuf, packetposition, 10);
-
-		DatagramPacket p = new DatagramPacket(pcktBuf, packetposition, new InetSocketAddress(toIP, port));
+	public int send(String toIP) throws IOException {
+		DatagramPacket p = createPacket(toIP, port);
 		int bytes_sent = p.getLength();
-	    try 
-	    {
-			sock.send(p);
-			if (DEBUG.Normal()) 
-		    	System.out.println(bytes_sent + " Bytes sent to IP [" + toIP + "]");
-		} 
-	    catch (IOException e) 
-	    {
-	    	if (DEBUG.Normal()) 
-	    		System.out.println("Failed to send data");
-	    	return 0;
-		}
+		sock.send(p);
+		LOGGER.info(bytes_sent + " Bytes sent to IP [" + toIP + "]");
 	    return bytes_sent;
 	}
 }

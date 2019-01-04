@@ -3,27 +3,24 @@ package eth;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class ethPacket 
+public class EthPacket 
 {
-	public byte dummy0;
-	public ethPacketHeaderL2 pcktHdrL2;
-	public ethEndpoint Destination;
-	public ethEndpoint Source;
+	public EthPacketHeaderL2 pcktHdrL2;
+	public EthEndpoint Destination;
+	public EthEndpoint Source;
     public short ErrorCode;
     public short FragmentID;  //Count Down
     public short PacketID;    //Count Up
     
-    private ByteBuffer bb;
-    
-    public ethPacket(byte[] packet)
+    public EthPacket(byte[] packet)
     {
-    	bb = ByteBuffer.wrap(packet);
-        bb.order(ByteOrder.LITTLE_ENDIAN); // or LITTLE_ENDIAN
-        
-        dummy0 = bb.get();
-        pcktHdrL2 = new ethPacketHeaderL2(bb);
-        Destination = new ethEndpoint(bb);
-        Source = new ethEndpoint(bb);
+    	ByteBuffer bb = ByteBuffer.wrap(packet);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.get();
+
+        pcktHdrL2 = new EthPacketHeaderL2(bb);
+        Destination = new EthEndpoint(bb);
+        Source = new EthEndpoint(bb);
         ErrorCode = bb.getShort();
         FragmentID = bb.getShort();
         PacketID = bb.getShort();

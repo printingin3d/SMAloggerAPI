@@ -2,13 +2,13 @@ package eth;
 
 import java.nio.ByteBuffer;
 
-public class ethEndpoint 
+public class EthEndpoint 
 {
 	public short SUSyID;
-	public int       Serial;
+	public int   Serial;
 	public short Ctrl;
 	
-	public ethEndpoint(ByteBuffer bb)
+	public EthEndpoint(ByteBuffer bb)
 	{
 		SUSyID = bb.getShort();
 		Serial = bb.getInt();

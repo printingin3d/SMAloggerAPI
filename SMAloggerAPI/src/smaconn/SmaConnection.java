@@ -1,15 +1,19 @@
 package smaconn;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eth.EthPacketHeaderL1;
+import eth.EthPacketHeaderL1L2;
+import exception.NoDataReceivedException;
 import inverterdata.InverterDataType;
-
-import smajava.SmaLogger;
 import smajava.misc;
-import smajava.misc.DEBUG;
-import eth.ethPacketHeaderL1;
-import eth.ethPacketHeaderL1L2;
 
-public class SmaConnection 
-{
+public class SmaConnection {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SmaConnection.class);
+
 	public class E_SBFSPOT
 	{
 		public final static int E_OK			= 0;
@@ -26,21 +30,19 @@ public class SmaConnection
 	
 	private final short anySUSyID = (short)0xFFFF;
 	private final long anySerial = 0xFFFFFFFF;
-	private final int COMMBUFSIZE = 1024;
+	private static final int COMMBUFSIZE = 1024;
 	
 	protected Ethernet ethernet;
 	
 	protected String ip;
-	protected byte[] CommBuf;
 	
 	public SmaConnection(Ethernet eth, String inverterIP)
 	{
 		this.ethernet = eth;
 		this.ip = inverterIP;
-		this.CommBuf = new byte[COMMBUFSIZE];
 	}
 	
-	protected void InitConnection()
+	protected void initConnection() throws IOException
 	{
 		ethernet.writePacketHeader();
 	    ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);
@@ -51,26 +53,26 @@ public class SmaConnection
 	    ethernet.writePacketLength();
 
 	    //Send packet to first inverter
-	    ethernet.Send(ip);    
+	    ethernet.send(ip);    
 	}
 	
-	protected void SMALogin(long userGroup, char[] password)
+	protected void smaLogin(UserGroup userGroup, char[] password) throws IOException
 	{
 		final int MAX_PWLENGTH = 12;
 	    char pw[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-	    if (DEBUG.Normal()) 
-	    	System.out.println("SMALogin()");
+	    LOGGER.info("smaLogin()");
 
-	    char encChar = (char) ((userGroup == SmaLogger.UG_USER)? 0x88:0xBB);
+	    char encChar = userGroup.getEncChar();
 	    //Encode password
 	    int idx;
 	    for (idx = 0; (password[idx] != 0) && (idx <= pw.length); idx++)
 	    {
 	        pw[idx] = (char) (password[idx] + encChar);
 	    }
-	    for (; idx < MAX_PWLENGTH; idx++)
-	        pw[idx] = encChar;
+	    for (; idx < MAX_PWLENGTH; idx++) {
+			pw[idx] = encChar;
+		}
 
 	    long now;
 
@@ -79,22 +81,21 @@ public class SmaConnection
         ethernet.writePacketHeader();
         ethernet.writePacket((char)0x0E, (char)0xA0, (short)0x0100, anySUSyID, anySerial);
         ethernet.writeLong(0xFFFD040C);
-        ethernet.writeLong(userGroup);
+        ethernet.writeLong(userGroup.getValue());
         ethernet.writeLong(0x00000384);
         ethernet.writeLong(now);
         ethernet.writeLong(0);
-        ethernet.writeArray(pw, pw.length);
+        ethernet.writeArray(pw);
         ethernet.writePacketTrailer();
         ethernet.writePacketLength();
 
         //TODO: make this work for multiple inverters, kinda did this with the whole api thing.
-        ethernet.Send(ip);
+        ethernet.send(ip);
 	}
 	
-	protected int SMALogoff()
+	protected void smaLogoff() throws IOException
 	{
-		if (DEBUG.Normal()) 
-	    	System.out.println("SMALogoff()");
+		LOGGER.info("SMALogoff()");
         
         ethernet.writePacketHeader();
         ethernet.writePacket((char)0x08, (char)0xA0, (short)0x0300, anySUSyID, anySerial);
@@ -104,12 +105,10 @@ public class SmaConnection
         ethernet.writePacketLength();
 
         //TODO: make this work for multiple inverters
-        ethernet.Send(ip);
-
-	    return E_SBFSPOT.E_OK;
+        ethernet.send(ip);
 	}
 	
-	protected void RequestInverterData(InverterDataType dataType)
+	protected void requestInverterData(InverterDataType dataType) throws IOException
 	{
 		ethernet.writePacketHeader();
         ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);
@@ -120,70 +119,64 @@ public class SmaConnection
         ethernet.writePacketTrailer();
         ethernet.writePacketLength();
         
-        ethernet.Send(ip);
+        ethernet.send(ip);
 	}
 	
-	protected int GetPacket()
-	{
-		//CommBuf = new byte[COMMBUFSIZE];
+	protected ResponsePacket getPacket() throws IOException {
+		ResponsePacket result = new ResponsePacket();
+		
+		byte[] commBuf = new byte[COMMBUFSIZE];
 		boolean retry = false;
-	    if (DEBUG.Normal()) 
-	    	System.out.printf("ethGetPacket()\n");
-	    int rc = E_SBFSPOT.E_OK;
+		LOGGER.info("ethGetPacket()");
 	    
-	    do 
-	    {
+	    do {
 	    	retry = false;
-	    	int bib = ethernet.Read(CommBuf);
+	    	int bib = ethernet.read(commBuf);
 
-	    	if (bib <= 0)
-	        {
-	            if (DEBUG.Normal()) 
-	            	System.out.printf("No data!\n");
-	            rc = E_SBFSPOT.E_NODATA;
+	    	if (bib <= 0) {
+	    		throw new NoDataReceivedException("No data!");
 	        }
-	        else
-	        {
-	        	ethPacketHeaderL1L2 pkHdr = new ethPacketHeaderL1L2(CommBuf);
+	        else {
+	        	EthPacketHeaderL1L2 pkHdr = new EthPacketHeaderL1L2(commBuf);
 	        	int pkLen = ((pkHdr.pcktHdrL1.hiPacketLen << 8) + pkHdr.pcktHdrL1.loPacketLen) & 0xff;	//0xff to convert it to unsigned?
 
 	            //More data after header?
 	            if (pkLen > 0)
 	            {
-	            	if (DEBUG.High()) 
-		        		misc.HexDump(CommBuf, bib, 10);
+	            	if (LOGGER.isTraceEnabled()) {
+						misc.HexDump(commBuf, bib, 10);
+					}
 
-	                if (misc.intSwap(pkHdr.pcktHdrL2.MagicNumber) == ethernet.ETH_L2SIGNATURE)
+	                if (pkHdr.pcktHdrL2.MagicNumber == ethernet.ETH_L2SIGNATURE)
 	                {
 	                    // Copy CommBuf to packetbuffer
 	                    // Dummy byte to align with BTH (7E)
-	                    ethernet.pcktBuf[0]= 0;
+	                	result.pcktBuf[0]= 0;
 	                    // We need last 6 bytes of ethPacketHeader too
-	                    System.arraycopy(CommBuf, ethPacketHeaderL1.getSize(), ethernet.pcktBuf, 1, bib - ethPacketHeaderL1.getSize());
+	                    System.arraycopy(commBuf, EthPacketHeaderL1.getSize(), result.pcktBuf, 1, bib - EthPacketHeaderL1.getSize());
 	                    
 	                    // Point packetposition at last byte in our buffer
 						// This is different from BTH
-	                    ethernet.packetposition = bib - ethPacketHeaderL1.getSize();
+	                    result.packetposition = bib - EthPacketHeaderL1.getSize();
 
-	                    if (DEBUG.High())
+	                    if (LOGGER.isTraceEnabled())
 	                    {
-	                        System.out.printf("<<<====== Content of pcktBuf =======>>>\n");
-	                        misc.HexDump(ethernet.pcktBuf, ethernet.packetposition, 10);
-	                        System.out.printf("<<<=================================>>>\n");
+	                        LOGGER.debug("<<<====== Content of pcktBuf =======>>>");
+	                        misc.HexDump(result.pcktBuf, result.packetposition, 10);
+	                        LOGGER.debug("<<<=================================>>>");
 	                    }
 	                }
-	                else
-	                {
-	                	if (DEBUG.Normal())  
-	                		System.out.printf("L2 header not found.\n");
+	                else {
+	                	LOGGER.info("L2 header not found.\n");
 	                    retry = true;
 	                }
-	            }
-	            else
-	                rc = E_SBFSPOT.E_NODATA;
+	            } else {
+		    		throw new NoDataReceivedException("No data!");
+				}
 	                
 	    	}
-		} while (retry == true);
-	    return rc;
+		} while (retry);
+
+	    return result;
 	}
 }
