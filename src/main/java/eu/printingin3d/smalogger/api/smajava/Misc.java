@@ -1,10 +1,8 @@
 package eu.printingin3d.smalogger.api.smajava;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 
-public class misc 
+public class Misc 
 {
 	public static final short NaN_S16 =	(short) 0x8000;		// "Not a Number" representation for SHORT (converted to 0 by SBFspot)
 	public static final short NaN_U16 = (short) 0xFFFF;		// "Not a Number" representation for USHORT (converted to 0 by SBFspot)
@@ -62,113 +60,7 @@ public class misc
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		return sdf.format(date);
 	}
-	
-	public static int get_longbe(byte[] buf, int pos)
-	{/*
-		ByteBuffer bb;
-		bb = ByteBuffer.wrap(buf);
-		bb.order(ByteOrder.BIG_ENDIAN);
-		bb.position(pos);
-		*/
-		int lng = 0;
-		//lng = bb.getInt();
-		
-		lng += buf[pos + 3];
-		lng <<= 8;
-		lng += buf[pos + 2];
-		lng <<= 8;
-		lng += buf[pos + 1];
-		lng <<= 8;
-		lng += buf[pos];
-		
-		return lng;
-	}
-	
-	public static long get_longlongbe(byte[] buf, int pos)
-	{
-		/*
-		ByteBuffer bb;
-		bb = ByteBuffer.wrap(buf);
-		bb.order(ByteOrder.BIG_ENDIAN);
-		bb.position(pos);
-		*/
-		long lnglng = 0;
-		//lng = bb.getLong();
-		lnglng += buf[pos + 7];
-		lnglng <<= 8;
-		lnglng += buf[pos + 6];
-		lnglng <<= 8;
-		lnglng += buf[pos + 5];
-		lnglng <<= 8;
-		lnglng += buf[pos + 4];
-		lnglng <<= 8;
-		lnglng += buf[pos + 3];
-		lnglng <<= 8;
-		lnglng += buf[pos + 2];
-		lnglng <<= 8;
-		lnglng += buf[pos + 1];
-		lnglng <<= 8;
-		lnglng += buf[pos];
-		return lnglng;
-	}
-	
-	public static long get_longlong(byte[] buf, int pos)
-	{
-		ByteBuffer bb;
-		bb = ByteBuffer.wrap(buf);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		bb.position(pos);
 
-		long lnglng = 0;
-		lnglng = bb.getLong();
-		return lnglng;
-	}
-	
-	public static int get_long(byte[] buf, int pos)
-	{
-		ByteBuffer bb;
-		bb = ByteBuffer.wrap(buf);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		bb.position(pos);
-		
-		int lng = 0;
-		lng = bb.getInt();
-		/*
-		lng += buf[pos + 3];
-		lng <<= 8;
-		lng += buf[pos + 2];
-		lng <<= 8;
-		lng += buf[pos + 1];
-		lng <<= 8;
-		lng += buf[pos];
-		*/
-		return lng;
-	}
-	
-	public static short get_short(byte[] buf, int pos)
-	{
-		ByteBuffer bb;
-		bb = ByteBuffer.wrap(buf);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		bb.position(pos);
-		
-		short shrt = 0;
-		shrt = bb.getShort();
-		
-		return shrt;
-	}
-	
-	public static short get_shortbe(byte[] buf, int pos)
-	{
-		short shrt = 0;
-		
-		shrt += buf[pos];
-		shrt <<= 8;
-		shrt += buf[pos + 1];
-		
-		return shrt;
-	}
-	
 	public static void HexDump(byte[] buf, int count, int radix)
 	{
 	    int i, j;

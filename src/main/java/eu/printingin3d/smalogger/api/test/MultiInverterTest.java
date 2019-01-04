@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
 import eu.printingin3d.smalogger.api.smajava.SmaLogger;
-import eu.printingin3d.smalogger.api.smajava.misc;
+import eu.printingin3d.smalogger.api.smajava.Misc;
 
 /**
  * Example of how using this api for multiple inverters should work.
@@ -73,10 +73,10 @@ public class MultiInverterTest {
 			    inverter.GetInverterData(InverterDataType.OperationTime);
 	            System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	            System.out.println("Energy Production:");
-	            System.out.printf("\tEToday: %.3fkWh\n", misc.tokWh(inverter.Data.EToday));
-	            System.out.printf("\tETotal: %.3fkWh\n", misc.tokWh(inverter.Data.ETotal));
-	            System.out.printf("\tOperation Time: %.2fh\n", misc.toHour(inverter.Data.OperationTime));
-	            System.out.printf("\tFeed-In Time  : %.2fh\n", misc.toHour(inverter.Data.FeedInTime));
+	            System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
+	            System.out.printf("\tETotal: %.3fkWh\n", Misc.tokWh(inverter.Data.ETotal));
+	            System.out.printf("\tOperation Time: %.2fh\n", Misc.toHour(inverter.Data.OperationTime));
+	            System.out.printf("\tFeed-In Time  : %.2fh\n", Misc.toHour(inverter.Data.FeedInTime));
 			}
 			
 			System.out.println("logging off inverters...");

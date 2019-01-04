@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
 import eu.printingin3d.smalogger.api.smajava.SmaLogger;
-import eu.printingin3d.smalogger.api.smajava.misc;
+import eu.printingin3d.smalogger.api.smajava.Misc;
 
 /**
  * Example of usage of this api while using a thread to keep reading the
@@ -72,8 +72,8 @@ public class ThreadedTest implements Runnable {
 					inverter.GetInverterData(InverterDataType.EnergyProduction);
 					System.out.println("==================================");
 					System.out.println("Energy Production:");
-					System.out.printf("\tEToday: %.3fkWh\n", misc.tokWh(inverter.Data.EToday));
-					System.out.printf("\tETotal: %.3fkWh\n", misc.tokWh(inverter.Data.ETotal));
+					System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
+					System.out.printf("\tETotal: %.3fkWh\n", Misc.tokWh(inverter.Data.ETotal));
 
 					inverter.GetInverterData(InverterDataType.SpotACPower);
 					inverter.GetInverterData(InverterDataType.SpotACVoltage);
@@ -84,15 +84,15 @@ public class ThreadedTest implements Runnable {
 
 					System.out.println("AC Spot Data:");
 					System.out.printf("\tPhase 1 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n",
-							misc.tokW(inverter.Data.Pac1), misc.toVolt(inverter.Data.Uac1),
-							misc.toAmp(inverter.Data.Iac1));
+							Misc.tokW(inverter.Data.Pac1), Misc.toVolt(inverter.Data.Uac1),
+							Misc.toAmp(inverter.Data.Iac1));
 					System.out.printf("\tPhase 2 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n",
-							misc.tokW(inverter.Data.Pac2), misc.toVolt(inverter.Data.Uac2),
-							misc.toAmp(inverter.Data.Iac2));
+							Misc.tokW(inverter.Data.Pac2), Misc.toVolt(inverter.Data.Uac2),
+							Misc.toAmp(inverter.Data.Iac2));
 					System.out.printf("\tPhase 3 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n",
-							misc.tokW(inverter.Data.Pac3), misc.toVolt(inverter.Data.Uac3),
-							misc.toAmp(inverter.Data.Iac3));
-					System.out.printf("\tTotal Pac   : %7.3fkW\n", misc.tokW(inverter.Data.TotalPac));
+							Misc.tokW(inverter.Data.Pac3), Misc.toVolt(inverter.Data.Uac3),
+							Misc.toAmp(inverter.Data.Iac3));
+					System.out.printf("\tTotal Pac   : %7.3fkW\n", Misc.tokW(inverter.Data.TotalPac));
 
 					counter--;
 					try {

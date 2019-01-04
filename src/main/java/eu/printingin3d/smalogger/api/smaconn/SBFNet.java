@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.printingin3d.smalogger.api.eth.EthPacketHeaderL1L2;
-import eu.printingin3d.smalogger.api.smajava.misc;
+import eu.printingin3d.smalogger.api.smajava.Misc;
 
 public class SBFNet {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SBFNet.class);
@@ -98,7 +98,7 @@ public class SBFNet {
 
 	protected DatagramPacket createPacket(String toIP, short port) {
 		if (LOGGER.isTraceEnabled()) {
-			misc.HexDump(pcktBuf, packetposition, 10);
+			Misc.HexDump(pcktBuf, packetposition, 10);
 		}
 
 		return new DatagramPacket(pcktBuf, packetposition, new InetSocketAddress(toIP, port));

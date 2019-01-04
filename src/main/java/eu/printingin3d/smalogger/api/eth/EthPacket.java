@@ -1,7 +1,6 @@
 package eu.printingin3d.smalogger.api.eth;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class EthPacket 
 {
@@ -12,10 +11,8 @@ public class EthPacket
     public short FragmentID;  //Count Down
     public short PacketID;    //Count Up
     
-    public EthPacket(byte[] packet)
+    public EthPacket(ByteBuffer bb)
     {
-    	ByteBuffer bb = ByteBuffer.wrap(packet);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.get();
 
         pcktHdrL2 = new EthPacketHeaderL2(bb);

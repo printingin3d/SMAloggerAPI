@@ -103,7 +103,7 @@ public class SmaLogger implements Closeable {
 		}
 
     	if (LOGGER.isDebugEnabled()) {
-			misc.HexDump(CommBuf, bytesRead, 10);
+			Misc.HexDump(CommBuf, bytesRead, 10);
 		}
     	
     	return inverters;

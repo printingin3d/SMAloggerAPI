@@ -1,6 +1,7 @@
 package eu.printingin3d.smalogger.api.inverter;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -12,10 +13,9 @@ import eu.printingin3d.smalogger.api.exception.InvalidPasswordException;
 import eu.printingin3d.smalogger.api.inverterdata.InverterData;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
 import eu.printingin3d.smalogger.api.smaconn.Ethernet;
-import eu.printingin3d.smalogger.api.smaconn.ResponsePacket;
 import eu.printingin3d.smalogger.api.smaconn.SmaConnection;
 import eu.printingin3d.smalogger.api.smaconn.UserGroup;
-import eu.printingin3d.smalogger.api.smajava.misc;
+import eu.printingin3d.smalogger.api.smajava.Misc;
 
 public class Inverter extends SmaConnection {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inverter.class);
@@ -78,19 +78,19 @@ public class Inverter extends SmaConnection {
 	{
 		//First initialize the connection.
 		initConnection();
-		ResponsePacket packet = getPacket();
-    	EthPacket pckt2 = new EthPacket(packet.pcktBuf);
+		ByteBuffer packet = getPacket();
+    	EthPacket pckt2 = new EthPacket(packet);
     	Data.SUSyID = pckt2.Source.SUSyID;
     	Data.Serial = pckt2.Source.Serial;
 		//Then login.
 		smaLogin(userGroup, password);
-    	ResponsePacket packet2 = getPacket();
-        EthPacket pckt = new EthPacket(packet2.pcktBuf);
+		ByteBuffer packet2 = getPacket();
+        EthPacket pckt = new EthPacket(packet2);
         if (ethernet.pcktID != ((pckt.PacketID) & 0x7FFF)) {   // InValid Packet ID
         	throw new IOException(String.format("Packet ID mismatch. Expected %d, received %d", ethernet.pcktID, ((pckt.PacketID) & 0x7FFF)));
         }
 
-		if ((misc.shortSwap(pckt.ErrorCode) == 0x0100)) {
+		if ((Misc.shortSwap(pckt.ErrorCode) == 0x0100)) {
 	        smaLogoff();
 	        throw new InvalidPasswordException("Logon failed. Check '"+userGroup+"' Password");
 	    }
@@ -118,29 +118,26 @@ public class Inverter extends SmaConnection {
 	    int recordsize = 0;
 	    int validPcktID = 0;
 	    int value = 0;
-	    validPcktID = 0;
 	    
 	    requestInverterData(invDataType);
 	    
-        do
-        {
-            ResponsePacket packet = getPacket();
+        do {
+            ByteBuffer packet = getPacket();
 
-            short rcvpcktID = (short) (packet.pcktBuf[27] & 0x7FFF);
+            short rcvpcktID = (short) (packet.get(27) & 0x7FFF);
             if (ethernet.pcktID == rcvpcktID)
             {
             	//Check if we received the package from the right inverter, not sure if
             	//this works with multiple inverters.
             	//We do this by checking if the susyd and serial is equal to this inverter object's susyd and serial.
-            	boolean rightOne = Data.SUSyID == misc.get_short(packet.pcktBuf, 15) && Data.Serial == misc.get_long(packet.pcktBuf, 17);
+            	boolean rightOne = Data.SUSyID == packet.getShort(15) && Data.Serial == packet.getInt(17);
 
-            	if (rightOne)
-                {
+            	if (rightOne) {
                     validPcktID = 1;
 
-                    for (int ix = 41; ix < packet.packetposition - 3; ix += recordsize)
+                    for (int ix = 41; ix < packet.limit() - 4; ix += recordsize)
                     {                   	
-                    	int code = misc.get_long(packet.pcktBuf, ix);
+                    	int code = packet.getInt(ix);
                     	
                         //Check this if something doesn't work, int to enum conversion. Should be good now
                         LriDef lri = LriDef.intToEnum((code & 0x00FFFF00));
@@ -148,13 +145,13 @@ public class Inverter extends SmaConnection {
                         char dataType = (char) (code >> 24);
                         //Not sure if java uses same long date, well it doesn't
                         //Multiply by 1000 cause java uses milliseconds and the inverter uses seconds since epoch.
-                        Date datetime = new Date(misc.get_long(packet.pcktBuf, ix + 4) * 1000l);                        
+                        Date datetime = new Date(packet.getInt(ix + 4) * 1000l);                        
                         
                         if ((dataType != 0x10) && (dataType != 0x08))	//Not TEXT or STATUS, so it should be DWORD
                         {
                         	//All data that needs an int value
-                            value = misc.get_long(packet.pcktBuf, ix + 8);
-                            if ((value == misc.NaN_S32) || (value == misc.NaN_U32)) {
+                            value = packet.getInt(ix + 8);
+                            if ((value == Misc.NaN_S32) || (value == Misc.NaN_U32)) {
 								value = 0;
 							}
                         }                       
@@ -162,8 +159,8 @@ public class Inverter extends SmaConnection {
                         if ((lri == LriDef.MeteringDyWhOut) || (lri == LriDef.MeteringTotWhOut) || (lri == LriDef.MeteringTotFeedTms) || (lri == LriDef.MeteringTotOpTms))	//QWORD
                         {
                         	//All data that needs a long value
-                        	long value64 = misc.get_longlong(packet.pcktBuf, ix + 8);
-                            if ((value64 == misc.NaN_S64) || (value64 == misc.NaN_U64)) {
+                        	long value64 = packet.getLong(ix + 8);
+                            if ((value64 == Misc.NaN_S64) || (value64 == Misc.NaN_U64)) {
 								value64 = 0;
 							}                      
                             
@@ -175,13 +172,13 @@ public class Inverter extends SmaConnection {
                         	//INV_NAME
                         	recordsize = 40;
                         	int DEVICE_NAME_LENGTH = 33; //32 bytes + terminating zero
-                            Data.SetInverterDataINVNAME(new String(Arrays.copyOfRange(packet.pcktBuf, ix+8, ix+8+DEVICE_NAME_LENGTH-1)).trim(), datetime);
+                            Data.SetInverterDataINVNAME(new String(Arrays.copyOfRange(packet.array(), ix+8, ix+8+DEVICE_NAME_LENGTH-1)).trim(), datetime);
                         }                       
                         else if(lri == LriDef.NameplatePkgRev)
                         {
                         	//INV_SWVER
                         	recordsize = 40;
-                        	char Vtype = (char) packet.pcktBuf[ix + 24];
+                        	char Vtype = (char) packet.get(ix + 24);
                             String ReleaseType;
                             if (Vtype > 5) {
 								ReleaseType = String.format("%c", Vtype);
@@ -189,9 +186,9 @@ public class Inverter extends SmaConnection {
 							else {
 								ReleaseType = String.format("%c", "NEABRS".charAt(Vtype));//NOREV-EXPERIMENTAL-ALPHA-BETA-RELEASE-SPECIAL
 							}
-                            char Vbuild = (char) packet.pcktBuf[ix + 25];
-                            char Vminor = (char) packet.pcktBuf[ix + 26];
-                            char Vmajor = (char) packet.pcktBuf[ix + 27];
+                            char Vbuild = (char) packet.get(ix + 25);
+                            char Vminor = (char) packet.get(ix + 26);
+                            char Vmajor = (char) packet.get(ix + 27);
                             //Vmajor and Vminor = 0x12 should be printed as '12' and not '18' (BCD)
                             String version = String.format("%c%c.%c%c.%02d.%s", '0'+(Vmajor >> 4), '0'+(Vmajor & 0x0F), '0'+(Vminor >> 4), '0'+(Vminor & 0x0F), (int)Vbuild, ReleaseType);  
                             Data.SetInverterDataSWVER(version, datetime);
@@ -206,14 +203,12 @@ public class Inverter extends SmaConnection {
                         	recordsize = 40;
                         	for (int idx = 8; idx < recordsize; idx += 4)
             		        {
-            		            int attribute = misc.get_long(packet.pcktBuf, ix + idx) & 0x00FFFFFF;
-            		            char attValue = (char) packet.pcktBuf[ix + idx + 3];
-            		            if (attribute == 0xFFFFFE)
-								 {
+            		            int attribute = packet.getInt(ix + idx) & 0x00FFFFFF;
+            		            if (attribute == 0xFFFFFE) {
 									break;	//End of attributes
 								}
-            		            if (attValue == 1)
-            		            {
+            		            char attValue = (char) packet.get(ix + idx + 3);
+            		            if (attValue == 1) {
             		                Data.SetInverterDataAttribute(lri, attribute, datetime);
             		            }
             		        }
@@ -246,7 +241,7 @@ public class Inverter extends SmaConnection {
                     }
                 }
             	else {
-            		LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", Data.SUSyID, misc.get_short(packet.pcktBuf, 15));
+            		LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", Data.SUSyID, packet.getShort(15));
             	}
             }
             else {

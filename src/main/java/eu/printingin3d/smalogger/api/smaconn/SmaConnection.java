@@ -1,6 +1,8 @@
 package eu.printingin3d.smalogger.api.smaconn;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +11,7 @@ import eu.printingin3d.smalogger.api.eth.EthPacketHeaderL1;
 import eu.printingin3d.smalogger.api.eth.EthPacketHeaderL1L2;
 import eu.printingin3d.smalogger.api.exception.NoDataReceivedException;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
-import eu.printingin3d.smalogger.api.smajava.misc;
+import eu.printingin3d.smalogger.api.smajava.Misc;
 
 public class SmaConnection {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SmaConnection.class);
@@ -113,24 +115,20 @@ public class SmaConnection {
 		ethernet.writePacketHeader();
         ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);
         //Get the command values stored in the enum.
-        ethernet.writeLong(dataType.Command);
-        ethernet.writeLong(dataType.First);
-        ethernet.writeLong(dataType.Last);
+        ethernet.writeLong(dataType.getCommand());
+        ethernet.writeLong(dataType.getFirst());
+        ethernet.writeLong(dataType.getLast());
         ethernet.writePacketTrailer();
         ethernet.writePacketLength();
         
         ethernet.send(ip);
 	}
 	
-	protected ResponsePacket getPacket() throws IOException {
-		ResponsePacket result = new ResponsePacket();
-		
+	protected ByteBuffer getPacket() throws IOException {
 		byte[] commBuf = new byte[COMMBUFSIZE];
-		boolean retry = false;
 		LOGGER.info("ethGetPacket()");
 	    
-	    do {
-	    	retry = false;
+	    while (true) {
 	    	int bib = ethernet.read(commBuf);
 
 	    	if (bib <= 0) {
@@ -141,42 +139,39 @@ public class SmaConnection {
 	        	int pkLen = ((pkHdr.pcktHdrL1.hiPacketLen << 8) + pkHdr.pcktHdrL1.loPacketLen) & 0xff;	//0xff to convert it to unsigned?
 
 	            //More data after header?
-	            if (pkLen > 0)
-	            {
+	            if (pkLen > 0) {
 	            	if (LOGGER.isTraceEnabled()) {
-						misc.HexDump(commBuf, bib, 10);
+						Misc.HexDump(commBuf, bib, 10);
 					}
 
-	                if (pkHdr.pcktHdrL2.MagicNumber == ethernet.ETH_L2SIGNATURE)
-	                {
-	                    // Copy CommBuf to packetbuffer
+	                if (pkHdr.pcktHdrL2.MagicNumber == ethernet.ETH_L2SIGNATURE) {
+	                	ByteBuffer bb = ByteBuffer.allocate(bib - EthPacketHeaderL1.getSize()+1);
+	                	bb.order(ByteOrder.LITTLE_ENDIAN);
+	                	// Copy CommBuf to packetbuffer
 	                    // Dummy byte to align with BTH (7E)
-	                	result.pcktBuf[0]= 0;
+	                	//result.pcktBuf[0]= 0;
 	                    // We need last 6 bytes of ethPacketHeader too
-	                    System.arraycopy(commBuf, EthPacketHeaderL1.getSize(), result.pcktBuf, 1, bib - EthPacketHeaderL1.getSize());
+	                    System.arraycopy(commBuf, EthPacketHeaderL1.getSize(), bb.array(), 1, bib - EthPacketHeaderL1.getSize());
 	                    
 	                    // Point packetposition at last byte in our buffer
 						// This is different from BTH
-	                    result.packetposition = bib - EthPacketHeaderL1.getSize();
+//	                    result.packetposition = bib - EthPacketHeaderL1.getSize();
 
 	                    if (LOGGER.isTraceEnabled())
 	                    {
 	                        LOGGER.debug("<<<====== Content of pcktBuf =======>>>");
-	                        misc.HexDump(result.pcktBuf, result.packetposition, 10);
+	                        Misc.HexDump(bb.array(), bb.limit(), 10);
 	                        LOGGER.debug("<<<=================================>>>");
 	                    }
+	                    return bb;
 	                }
 	                else {
 	                	LOGGER.info("L2 header not found.\n");
-	                    retry = true;
 	                }
 	            } else {
 		    		throw new NoDataReceivedException("No data!");
 				}
-	                
 	    	}
-		} while (retry);
-
-	    return result;
+		}
 	}
 }

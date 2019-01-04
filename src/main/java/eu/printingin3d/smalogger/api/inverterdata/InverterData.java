@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import eu.printingin3d.smalogger.api.inverter.InvDeviceClass;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
+import eu.printingin3d.smalogger.api.smajava.Misc;
 import eu.printingin3d.smalogger.api.smajava.TagDefs;
-import eu.printingin3d.smalogger.api.smajava.misc;
 
 public class InverterData {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InverterData.class);
@@ -55,12 +55,6 @@ public class InverterData {
     public String SWVersion;	//"03.01.05.R"
     public int DeviceStatus;
     public int GridRelayStatus;
-    /**
-     * @deprecated
-     * Removing this value as it doesn't seem to have any use.
-     */
-    @Deprecated
-    public int flags;
     public DayData[] dayData = new DayData[288];
     public MonthData[] monthData = new MonthData[31];
     public ArrayList<EventData> eventData;
@@ -132,46 +126,46 @@ public class InverterData {
         case GridMsPhVphsA: //SPOT_UAC1
             this.Uac1 = value;
 
-            LOGGER.info(String.format(strVolt, "SPOT_UAC1", misc.toVolt(value), datetime));
+            LOGGER.info(String.format(strVolt, "SPOT_UAC1", Misc.toVolt(value), datetime));
             break;
 
         case GridMsPhVphsB: //SPOT_UAC2
             this.Uac2 = value;
 
-            LOGGER.info(String.format(strVolt, "SPOT_UAC2", misc.toVolt(value), datetime));
+            LOGGER.info(String.format(strVolt, "SPOT_UAC2", Misc.toVolt(value), datetime));
             break;
 
         case GridMsPhVphsC: //SPOT_UAC3
             this.Uac3 = value;
 
-            LOGGER.info(String.format(strVolt, "SPOT_UAC3", misc.toVolt(value), datetime));
+            LOGGER.info(String.format(strVolt, "SPOT_UAC3", Misc.toVolt(value), datetime));
             break;
 
         case GridMsAphsA_1: //SPOT_IAC1
 		case GridMsAphsA:
             this.Iac1 = value;
 
-            LOGGER.info(String.format(strAmp, "SPOT_IAC1", misc.toAmp(value), datetime));
+            LOGGER.info(String.format(strAmp, "SPOT_IAC1", Misc.toAmp(value), datetime));
             break;
 
         case GridMsAphsB_1: //SPOT_IAC2
 		case GridMsAphsB:
             this.Iac2 = value;
 
-            LOGGER.info(String.format(strAmp, "SPOT_IAC2", misc.toAmp(value), datetime));
+            LOGGER.info(String.format(strAmp, "SPOT_IAC2", Misc.toAmp(value), datetime));
             break;
 
         case GridMsAphsC_1: //SPOT_IAC3
 		case GridMsAphsC:
             this.Iac3 = value;
 
-            LOGGER.info(String.format(strAmp, "SPOT_IAC3", misc.toAmp(value), datetime));
+            LOGGER.info(String.format(strAmp, "SPOT_IAC3", Misc.toAmp(value), datetime));
             break;
 
         case GridMsHz: //SPOT_FREQ
             this.GridFreq = value;
 
-            LOGGER.info(String.format("%-12s: %.2f (Hz) %s\n", "SPOT_FREQ", misc.toHz(value), datetime));
+            LOGGER.info(String.format("%-12s: %.2f (Hz) %s\n", "SPOT_FREQ", Misc.toHz(value), datetime));
             break;          
 
         case BatChaStt:
@@ -305,12 +299,12 @@ public class InverterData {
 		        if (cls == 1)
 		        {
 		            this.Udc1 = value;
-		            LOGGER.info(String.format(strVolt, "SPOT_UDC1", misc.toVolt(value), datetime));
+		            LOGGER.info(String.format(strVolt, "SPOT_UDC1", Misc.toVolt(value), datetime));
 		        }
 		        if (cls == 2)
 		        {
 		            this.Udc2 = value;
-		            LOGGER.info(String.format(strVolt, "SPOT_UDC2", misc.toVolt(value), datetime));
+		            LOGGER.info(String.format(strVolt, "SPOT_UDC2", Misc.toVolt(value), datetime));
 		        }
 		
 		        break;
@@ -319,12 +313,12 @@ public class InverterData {
 		        if (cls == 1)
 		        {
 		            this.Idc1 = value;
-		            LOGGER.info(String.format(strAmp, "SPOT_IDC1", misc.toAmp(value), datetime));
+		            LOGGER.info(String.format(strAmp, "SPOT_IDC1", Misc.toAmp(value), datetime));
 		        }
 		        if (cls == 2)
 		        {
 		            this.Idc2 = value;
-		            LOGGER.info(String.format(strAmp, "SPOT_IDC2", misc.toAmp(value), datetime));
+		            LOGGER.info(String.format(strAmp, "SPOT_IDC2", Misc.toAmp(value), datetime));
 		        }
 		        break;
 		default:
@@ -343,7 +337,7 @@ public class InverterData {
 		    case MeteringTotWhOut: //SPOT_ETOTAL
 		        this.ETotal = value64;
 		
-		        LOGGER.info(String.format(strkWh, "SPOT_ETOTAL", misc.tokWh(value64), datetime));
+		        LOGGER.info(String.format(strkWh, "SPOT_ETOTAL", Misc.tokWh(value64), datetime));
 		        break;
 		
 		    case MeteringDyWhOut: //SPOT_ETODAY
@@ -351,19 +345,19 @@ public class InverterData {
 		        this.InverterDatetime = datetime.getTime();
 		        this.EToday = value64;
 		
-		        LOGGER.info(String.format(strkWh, "SPOT_ETODAY", misc.tokWh(value64), datetime));
+		        LOGGER.info(String.format(strkWh, "SPOT_ETODAY", Misc.tokWh(value64), datetime));
 		        break;
 		
 		    case MeteringTotOpTms: //SPOT_OPERTM
 		        this.OperationTime = value64;
 		
-		        LOGGER.info(String.format(strHour, "SPOT_OPERTM", misc.toHour(value64), datetime));
+		        LOGGER.info(String.format(strHour, "SPOT_OPERTM", Misc.toHour(value64), datetime));
 		        break;
 		
 		    case MeteringTotFeedTms: //SPOT_FEEDTM
 		        this.FeedInTime = value64;
 		
-		        LOGGER.info(String.format(strHour, "SPOT_FEEDTM", misc.toHour(value64), datetime));
+		        LOGGER.info(String.format(strHour, "SPOT_FEEDTM", Misc.toHour(value64), datetime));
 		        break;
 		default:
 			LOGGER.info("Wrong enum given to this method (SetInverterData64), {}", lri);
