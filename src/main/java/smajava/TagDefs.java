@@ -47,7 +47,7 @@ public class TagDefs {
 		}
 	}
 	
-	private Map<Integer, TD> m_tagdefmap = new HashMap<Integer, TD>();
+	private Map<Integer, TD> m_tagdefmap = new HashMap<>();
 	
 	private void print_error(String msg, int line, String fpath)
 	{
@@ -78,7 +78,7 @@ public class TagDefs {
 
 		//Build fullpath to taglist<locale>.txt
 		//Default to EN-US if localized file not found
-		String fn_taglist = "/support_files/TagList" + locale + ".txt";
+		String fn_taglist = "/TagList" + locale + ".txt";
 
 		InputStream in = getClass().getResourceAsStream(fn_taglist);
 		
