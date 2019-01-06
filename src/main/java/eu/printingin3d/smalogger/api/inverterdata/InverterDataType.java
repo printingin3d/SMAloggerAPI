@@ -1,7 +1,6 @@
 package eu.printingin3d.smalogger.api.inverterdata;
 
-public enum InverterDataType 
-{
+public enum InverterDataType implements IInverterCommand {
 	/**
 	 * SPOT_ETODAY, SPOT_ETOTAL
 	 */
@@ -15,14 +14,6 @@ public enum InverterDataType
 	 */
 	SpotDCVoltage		( 0x53800200, 0x00451F00, 0x004521FF),
 	/**
-	 * SPOT_PAC1, SPOT_PAC2, SPOT_PAC3
-	 */
-	SpotACPower			( 0x51000200, 0x00464000, 0x004642FF),
-	/**
-	 * SPOT_UAC1, SPOT_UAC2, SPOT_UAC3, SPOT_IAC1, SPOT_IAC2, SPOT_IAC3
-	 */
-	SpotACVoltage		( 0x51000200, 0x00464800, 0x004655FF),
-	/**
 	 * SPOT_FREQ
 	 */
 	SpotGridFrequency	( 0x51000200, 0x00465700, 0x004657FF),
@@ -34,10 +25,6 @@ public enum InverterDataType
 	 * INV_PACMAX1_2
 	 */
 	MaxACPower2			( 0x51000200, 0x00832A00, 0x00832AFF),
-	/**
-	 * SPOT_PACTOT
-	 */
-	SpotACTotalPower	( 0x51000200, 0x00263F00, 0x00263FFF),
 	/**
 	 * INV_NAME, INV_TYPE, INV_CLASS
 	 */
@@ -85,14 +72,17 @@ public enum InverterDataType
 		this.last = last;
 	}
 
+	@Override
 	public long getCommand() {
 		return command;
 	}
 
+	@Override
 	public long getFirst() {
 		return first;
 	}
 
+	@Override
 	public long getLast() {
 		return last;
 	}

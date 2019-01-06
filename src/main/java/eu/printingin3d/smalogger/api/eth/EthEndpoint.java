@@ -5,12 +5,11 @@ import java.nio.ByteBuffer;
 public class EthEndpoint {
 	private final short SUSyID;
 	private final int   Serial;
-	private final short Ctrl;
 	
 	public EthEndpoint(ByteBuffer bb) {
 		SUSyID = bb.getShort();
 		Serial = bb.getInt();
-		Ctrl = bb.getShort();
+		bb.getShort();
 	}
     
     public short getSUSyID() {
@@ -26,7 +25,7 @@ public class EthEndpoint {
     	size += Short.SIZE;
     	size += Integer.SIZE;
     	size += Short.SIZE;
-    	return size;
+    	return size / 8;
     }
 
 }

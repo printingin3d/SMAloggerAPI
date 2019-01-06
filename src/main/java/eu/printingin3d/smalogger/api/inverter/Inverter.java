@@ -12,6 +12,7 @@ import eu.printingin3d.smalogger.api.eth.EthPacket;
 import eu.printingin3d.smalogger.api.exception.InvalidPasswordException;
 import eu.printingin3d.smalogger.api.inverterdata.InverterData;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
+import eu.printingin3d.smalogger.api.requestvisitor.AbstractInverterRequest;
 import eu.printingin3d.smalogger.api.smaconn.Ethernet;
 import eu.printingin3d.smalogger.api.smaconn.SmaConnection;
 import eu.printingin3d.smalogger.api.smaconn.UserGroup;
@@ -115,7 +116,6 @@ public class Inverter extends SmaConnection {
 	public void getInverterData(InverterDataType invDataType) throws IOException {
 		LOGGER.info("getInverterData({})", invDataType);
 
-	    int recordsize = 0;
 	    int validPcktID = 0;
 	    int value = 0;
 	    
@@ -135,7 +135,7 @@ public class Inverter extends SmaConnection {
             	if (rightOne) {
                     validPcktID = 1;
 
-                    for (int ix = 41; ix < packet.limit() - 4; ix += recordsize)
+                    for (int ix = 41; ix < packet.limit() - 4;)
                     {                   	
                     	int code = packet.getInt(ix);
                     	
@@ -164,20 +164,17 @@ public class Inverter extends SmaConnection {
 								value64 = 0;
 							}                      
                             
-                            recordsize = 16;
                             Data.SetInverterData64(lri, value64, datetime);
                         }
                         else if(lri == LriDef.NameplateLocation)
                         {
                         	//INV_NAME
-                        	recordsize = 40;
                         	int DEVICE_NAME_LENGTH = 33; //32 bytes + terminating zero
                             Data.SetInverterDataINVNAME(new String(Arrays.copyOfRange(packet.array(), ix+8, ix+8+DEVICE_NAME_LENGTH-1)).trim(), datetime);
                         }                       
                         else if(lri == LriDef.NameplatePkgRev)
                         {
                         	//INV_SWVER
-                        	recordsize = 40;
                         	char Vtype = (char) packet.get(ix + 24);
                             String ReleaseType;
                             if (Vtype > 5) {
@@ -200,8 +197,7 @@ public class Inverter extends SmaConnection {
                         	//INV_GRIDRELAY
                         	//INV_CLASS
                         	//INV_TYPE
-                        	recordsize = 40;
-                        	for (int idx = 8; idx < recordsize; idx += 4)
+                        	for (int idx = 8; idx < lri.getRecordSize(); idx += 4)
             		        {
             		            int attribute = packet.getInt(ix + idx) & 0x00FFFFFF;
             		            if (attribute == 0xFFFFFE) {
@@ -219,25 +215,16 @@ public class Inverter extends SmaConnection {
                         	//SPOT_PDC1 / SPOT_PDC2
                         	//SPOT_UDC1 / SPOT_UDC2
                         	//SPOT_IDC1 / SPOT_IDC2
-                        	recordsize = 28;
                         	long cls = code & 0xFF;
                         	Data.SetInverterDataCls(lri, value, cls, datetime);
                         }
-                        else
-                        {	
+                        else {	
                         	//All other cases go here
-                        	if(lri == null)
-                        	{
-                        		if(recordsize == 0) {
-									recordsize = 12;
-								}
-                        	}
-                        	else
-                        	{
-                            	recordsize = 28;
+                        	if(lri != null) {
                             	Data.SetInverterData(lri, value, datetime);
                         	}
                         }
+                        ix += lri==null ? 12 : lri.getRecordSize();
                     }
                 }
             	else {
@@ -252,6 +239,55 @@ public class Inverter extends SmaConnection {
 	}
 	
 	/**
+	 * Requests data from the inverter which gets stored in it's Data attribute.
+	 * Uses Data.(Name of the value you requested) to get the actual value this method requested.
+	 * @param invDataType The type of data you want to retrieve from the inverter.
+	 * @return Returns 0 if everything went ok.
+	 * @throws IOException 
+	 */
+	public <T> T getInverterData(AbstractInverterRequest<T> request) throws IOException {
+		LOGGER.info("getInverterData({})", request.getClass().getName());
+		
+		requestInverterData(request);
+		
+		while(true) {
+			ByteBuffer packet = getPacket();
+			
+			short rcvpcktID = (short) (packet.get(27) & 0x7FFF);
+			if (ethernet.pcktID == rcvpcktID)
+			{
+				//Check if we received the package from the right inverter, not sure if
+				//this works with multiple inverters.
+				//We do this by checking if the susyd and serial is equal to this inverter object's susyd and serial.
+				boolean rightOne = Data.SUSyID == packet.getShort(15) && Data.Serial == packet.getInt(17);
+				
+				if (rightOne) {
+					packet.position(41);   // the first non header byte
+					
+                    for (int ix = 41; ix < packet.limit() - 4;) {
+                    	packet.position(ix);
+                    	int code = packet.getInt();
+                    	
+                        LriDef lri = LriDef.intToEnum((code & 0x00FFFF00));
+                        
+                        request.parseOneSegment(lri, packet);
+                        
+                        ix += lri==null ? 12 : lri.getRecordSize();
+                    }
+                    break;
+				}
+				else {
+					LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", Data.SUSyID, packet.getShort(15));
+				}
+			}
+			else {
+				LOGGER.error("Packet ID mismatch. Expected {}, received {}", ethernet.pcktID, rcvpcktID);
+			}
+		}
+		return request.closeParse();
+	}
+	
+	/**
 	 * Calculates the missing DC Spot Values
 	 */
 	public void calcMissingSpot()
@@ -261,20 +297,6 @@ public class Inverter extends SmaConnection {
 		}
 		if (Data.Pdc2 == 0) {
 			Data.Pdc2 = (Data.Idc2 * Data.Udc2) / 100000;
-		}
-
-		if (Data.Pac1 == 0) {
-			Data.Pac1 = (Data.Iac1 * Data.Uac1) / 100000;
-		}
-		if (Data.Pac2 == 0) {
-			Data.Pac2 = (Data.Iac2 * Data.Uac2) / 100000;
-		}
-		if (Data.Pac3 == 0) {
-			Data.Pac3 = (Data.Iac3 * Data.Uac3) / 100000;
-		}
-
-	    if (Data.TotalPac == 0) {
-			Data.TotalPac = Data.Pac1 + Data.Pac2 + Data.Pac3;
 		}
 	}
 	

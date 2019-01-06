@@ -33,16 +33,6 @@ public class InverterData {
 	public long Pmax1;
 	public long Pmax2;
 	public long Pmax3;
-	public long TotalPac;
-	public long Pac1;
-	public long Pac2;
-	public long Pac3;
-	public long Uac1;
-	public long Uac2;
-	public long Uac3;
-	public long Iac1;
-    public long Iac2;
-    public long Iac3;
     public long GridFreq;
     public long OperationTime;
     public long FeedInTime;
@@ -74,98 +64,31 @@ public class InverterData {
     public void SetInverterData(LriDef lri, int value, Date datetime)
     {
     	String strWatt = "%-12s: %d (W) %s";
-	    String strVolt = "%-12s: %.2f (V) %s";
-	    String strAmp = "%-12s: %.3f (A) %s";
 	    
     	switch (lri)
         {
-        case GridMsTotW: //SPOT_PACTOT
-            //This function gives us the time when the inverter was switched off
-            this.SleepTime = datetime.getTime();
-            this.TotalPac = value;
-
-            LOGGER.info(String.format(strWatt, "SPOT_PACTOT", value, datetime));
-            break;
-
         case OperationHealthSttOk: //INV_PACMAX1
             this.Pmax1 = value;
 
-            LOGGER.info(String.format(strWatt, "INV_PACMAX1", value, datetime));
+            LOGGER.debug(String.format(strWatt, "INV_PACMAX1", value, datetime));
             break;
 
         case OperationHealthSttWrn: //INV_PACMAX2
             this.Pmax2 = value;
 
-            LOGGER.info(String.format(strWatt, "INV_PACMAX2", value, datetime));
+            LOGGER.debug(String.format(strWatt, "INV_PACMAX2", value, datetime));
             break;
 
         case OperationHealthSttAlm: //INV_PACMAX3
             this.Pmax3 = value;
 
-            LOGGER.info(String.format(strWatt, "INV_PACMAX3", value, datetime));
-            break;
-
-        case GridMsWphsA: //SPOT_PAC1
-            this.Pac1 = value;
-
-            LOGGER.info(String.format(strWatt, "SPOT_PAC1", value, datetime));
-            break;
-
-        case GridMsWphsB: //SPOT_PAC2
-            this.Pac2 = value;
-
-            LOGGER.info(String.format(strWatt, "SPOT_PAC2", value, datetime));
-            break;
-
-        case GridMsWphsC: //SPOT_PAC3
-            this.Pac3 = value;
-
-            LOGGER.info(String.format(strWatt, "SPOT_PAC3", value, datetime));
-            break;
-
-        case GridMsPhVphsA: //SPOT_UAC1
-            this.Uac1 = value;
-
-            LOGGER.info(String.format(strVolt, "SPOT_UAC1", Misc.toVolt(value), datetime));
-            break;
-
-        case GridMsPhVphsB: //SPOT_UAC2
-            this.Uac2 = value;
-
-            LOGGER.info(String.format(strVolt, "SPOT_UAC2", Misc.toVolt(value), datetime));
-            break;
-
-        case GridMsPhVphsC: //SPOT_UAC3
-            this.Uac3 = value;
-
-            LOGGER.info(String.format(strVolt, "SPOT_UAC3", Misc.toVolt(value), datetime));
-            break;
-
-        case GridMsAphsA_1: //SPOT_IAC1
-		case GridMsAphsA:
-            this.Iac1 = value;
-
-            LOGGER.info(String.format(strAmp, "SPOT_IAC1", Misc.toAmp(value), datetime));
-            break;
-
-        case GridMsAphsB_1: //SPOT_IAC2
-		case GridMsAphsB:
-            this.Iac2 = value;
-
-            LOGGER.info(String.format(strAmp, "SPOT_IAC2", Misc.toAmp(value), datetime));
-            break;
-
-        case GridMsAphsC_1: //SPOT_IAC3
-		case GridMsAphsC:
-            this.Iac3 = value;
-
-            LOGGER.info(String.format(strAmp, "SPOT_IAC3", Misc.toAmp(value), datetime));
+            LOGGER.debug(String.format(strWatt, "INV_PACMAX3", value, datetime));
             break;
 
         case GridMsHz: //SPOT_FREQ
             this.GridFreq = value;
 
-            LOGGER.info(String.format("%-12s: %.2f (Hz) %s\n", "SPOT_FREQ", Misc.toHz(value), datetime));
+            LOGGER.debug(String.format("%-12s: %.2f (Hz) %s\n", "SPOT_FREQ", Misc.toHz(value), datetime));
             break;          
 
         case BatChaStt:
@@ -201,7 +124,7 @@ public class InverterData {
 			break;
 
 		default:
-			LOGGER.info("Wrong enum given to this method (SetInverterData), {}", lri);
+			LOGGER.error("Wrong enum given to this method (SetInverterData), {}", lri);
 			break;
         }
     }
@@ -211,14 +134,14 @@ public class InverterData {
     	this.WakeupTime = datetime.getTime();
     	this.DeviceName = deviceName;
 
-    	LOGGER.info(String.format("%-12s: '%s' %s", "INV_NAME", this.DeviceName, datetime));
+    	LOGGER.debug(String.format("%-12s: '%s' %s", "INV_NAME", this.DeviceName, datetime));
     }
     
     public void SetInverterDataSWVER(String swVersion, Date datetime)
     {
     	//INV_SWVER
         this.SWVersion = swVersion;
-        LOGGER.info(String.format("%-12s: '%s' %s", "INV_SWVER", this.SWVersion, datetime));
+        LOGGER.debug(String.format("%-12s: '%s' %s", "INV_SWVER", this.SWVersion, datetime));
     }
     
     public void SetInverterDataAttribute(LriDef lri, int attribute, Date datetime)
@@ -228,13 +151,13 @@ public class InverterData {
 		    case OperationHealth: //INV_STATUS:
                 this.DeviceStatus = attribute;
 		
-                LOGGER.info(String.format("%-12s: '%s' %s", "INV_STATUS", TagDefs.GetInstance().getDesc(this.DeviceStatus, "?"), datetime.toString()));
+                LOGGER.debug(String.format("%-12s: '%s' %s", "INV_STATUS", TagDefs.GetInstance().getDesc(this.DeviceStatus, "?"), datetime.toString()));
 		        break;
 		
 		    case OperationGriSwStt: //INV_GRIDRELAY
                 this.GridRelayStatus = attribute;
 		
-                LOGGER.info(String.format("%-12s: '%s' %s", "INV_GRIDRELAY", TagDefs.GetInstance().getDesc(this.GridRelayStatus, "?"), datetime.toString()));
+                LOGGER.debug(String.format("%-12s: '%s' %s", "INV_GRIDRELAY", TagDefs.GetInstance().getDesc(this.GridRelayStatus, "?"), datetime.toString()));
 		        break;
 		        
 	        case NameplateMainModel: //INV_CLASS
@@ -250,7 +173,7 @@ public class InverterData {
                     LOGGER.warn(String.format("0x%08lX and Device Class=...", attribute));
                 }
 	
-				LOGGER.info(String.format("%-12s: '%s' %s", "INV_CLASS", this.DeviceClass, datetime));
+				LOGGER.debug(String.format("%-12s: '%s' %s", "INV_CLASS", this.DeviceClass, datetime));
 	            break;
 	            
 	        case NameplateModel: //INV_TYPE
@@ -265,10 +188,10 @@ public class InverterData {
 					LOGGER.warn(String.format("0x%08lX and Inverter Type=<Fill in the exact type> (e.g. SB1300TL-10)", attribute));
 				}
 	
-				LOGGER.info(String.format("%-12s: '%s' %s", "INV_TYPE", this.DeviceType, datetime));
+				LOGGER.debug(String.format("%-12s: '%s' %s", "INV_TYPE", this.DeviceType, datetime));
 	            break;
 	        default:
-	        	LOGGER.info("Wrong enum given to this method (SetInverterDataAttribute), {}", lri);
+	        	LOGGER.error("Wrong enum given to this method (SetInverterDataAttribute), {}", lri);
 				break;
     	}
     }
@@ -285,12 +208,12 @@ public class InverterData {
 		        if (cls == 1)   // MPP1
 		        {
 		            this.Pdc1 = value;
-		            LOGGER.info(String.format(strWatt, "SPOT_PDC1", value, datetime));
+		            LOGGER.debug(String.format(strWatt, "SPOT_PDC1", value, datetime));
 		        }
 		        if (cls == 2)   // MPP2
 		        {
 		            this.Pdc2 = value;
-		            LOGGER.info(String.format(strWatt, "SPOT_PDC2", value, datetime));
+		            LOGGER.debug(String.format(strWatt, "SPOT_PDC2", value, datetime));
 		        }
 		
 		        break;
@@ -299,12 +222,12 @@ public class InverterData {
 		        if (cls == 1)
 		        {
 		            this.Udc1 = value;
-		            LOGGER.info(String.format(strVolt, "SPOT_UDC1", Misc.toVolt(value), datetime));
+		            LOGGER.debug(String.format(strVolt, "SPOT_UDC1", Misc.toVolt(value), datetime));
 		        }
 		        if (cls == 2)
 		        {
 		            this.Udc2 = value;
-		            LOGGER.info(String.format(strVolt, "SPOT_UDC2", Misc.toVolt(value), datetime));
+		            LOGGER.debug(String.format(strVolt, "SPOT_UDC2", Misc.toVolt(value), datetime));
 		        }
 		
 		        break;
@@ -313,16 +236,16 @@ public class InverterData {
 		        if (cls == 1)
 		        {
 		            this.Idc1 = value;
-		            LOGGER.info(String.format(strAmp, "SPOT_IDC1", Misc.toAmp(value), datetime));
+		            LOGGER.debug(String.format(strAmp, "SPOT_IDC1", Misc.toAmp(value), datetime));
 		        }
 		        if (cls == 2)
 		        {
 		            this.Idc2 = value;
-		            LOGGER.info(String.format(strAmp, "SPOT_IDC2", Misc.toAmp(value), datetime));
+		            LOGGER.debug(String.format(strAmp, "SPOT_IDC2", Misc.toAmp(value), datetime));
 		        }
 		        break;
 		default:
-			LOGGER.info("Wrong enum given to this method (SetInverterDataCls), {}", lri);
+			LOGGER.error("Wrong enum given to this method (SetInverterDataCls), {}", lri);
 			break;
     	}
     }
@@ -337,7 +260,7 @@ public class InverterData {
 		    case MeteringTotWhOut: //SPOT_ETOTAL
 		        this.ETotal = value64;
 		
-		        LOGGER.info(String.format(strkWh, "SPOT_ETOTAL", Misc.tokWh(value64), datetime));
+		        LOGGER.debug(String.format(strkWh, "SPOT_ETOTAL", Misc.tokWh(value64), datetime));
 		        break;
 		
 		    case MeteringDyWhOut: //SPOT_ETODAY
@@ -345,22 +268,22 @@ public class InverterData {
 		        this.InverterDatetime = datetime.getTime();
 		        this.EToday = value64;
 		
-		        LOGGER.info(String.format(strkWh, "SPOT_ETODAY", Misc.tokWh(value64), datetime));
+		        LOGGER.debug(String.format(strkWh, "SPOT_ETODAY", Misc.tokWh(value64), datetime));
 		        break;
 		
 		    case MeteringTotOpTms: //SPOT_OPERTM
 		        this.OperationTime = value64;
 		
-		        LOGGER.info(String.format(strHour, "SPOT_OPERTM", Misc.toHour(value64), datetime));
+		        LOGGER.debug(String.format(strHour, "SPOT_OPERTM", Misc.toHour(value64), datetime));
 		        break;
 		
 		    case MeteringTotFeedTms: //SPOT_FEEDTM
 		        this.FeedInTime = value64;
 		
-		        LOGGER.info(String.format(strHour, "SPOT_FEEDTM", Misc.toHour(value64), datetime));
+		        LOGGER.debug(String.format(strHour, "SPOT_FEEDTM", Misc.toHour(value64), datetime));
 		        break;
 		default:
-			LOGGER.info("Wrong enum given to this method (SetInverterData64), {}", lri);
+			LOGGER.error("Wrong enum given to this method (SetInverterData64), {}", lri);
 			break;
     	}
     }

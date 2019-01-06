@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 import eu.printingin3d.smalogger.api.inverter.InvDeviceClass;
 import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
+import eu.printingin3d.smalogger.api.requestvisitor.SpotAcPowerRequest;
+import eu.printingin3d.smalogger.api.requestvisitor.SpotAcTotalPowerRequest;
+import eu.printingin3d.smalogger.api.requestvisitor.SpotAcVoltageRequest;
+import eu.printingin3d.smalogger.api.response.ACVoltageAmpereResponse;
+import eu.printingin3d.smalogger.api.response.ThreePhaseResponse;
 import eu.printingin3d.smalogger.api.smajava.Misc;
 import eu.printingin3d.smalogger.api.smajava.SmaLogger;
 import eu.printingin3d.smalogger.api.smajava.TagDefs;
@@ -67,7 +72,6 @@ public class SBFspotTest {
 	
 			inverter.getInverterData(InverterDataType.InverterTemperature);
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
-			//System.out.printf("Device Temperature: %3.1f%sC\n", (float)(inverter.Data.Temperature / 100f), misc.SYM_DEGREE); // degree symbol is different on windows/linux
 			System.out.printf("Device Temperature: %3.1f%sC\n", Misc.toCelc(inverter.Data.Temperature), Misc.SYM_DEGREE); // degree symbol is different on windows/linux
 	
 			if (inverter.Data.DevClass == InvDeviceClass.SolarInverter) {
@@ -107,20 +111,17 @@ public class SBFspotTest {
 	        System.out.printf("\tString 1 Pdc: %7.3fkW - Udc: %6.2fV - Idc: %6.3fA\n", Misc.tokW(inverter.Data.Pdc1), Misc.toVolt(inverter.Data.Udc1), Misc.toAmp(inverter.Data.Idc1));
 	        System.out.printf("\tString 2 Pdc: %7.3fkW - Udc: %6.2fV - Idc: %6.3fA\n", Misc.tokW(inverter.Data.Pdc2), Misc.toVolt(inverter.Data.Udc2), Misc.toAmp(inverter.Data.Idc2));
 	
-		    inverter.getInverterData(InverterDataType.SpotACPower);
-		    inverter.getInverterData(InverterDataType.SpotACVoltage);
-		    inverter.getInverterData(InverterDataType.SpotACTotalPower);
-	
-		    //Calculate missing AC Spot Values
-		    inverter.calcMissingSpot();
-	
+	        ThreePhaseResponse<Integer> power = inverter.getInverterData(new SpotAcPowerRequest());
+	        ACVoltageAmpereResponse voltAmp = inverter.getInverterData(new SpotAcVoltageRequest());
+	        Integer totalPower = inverter.getInverterData(new SpotAcTotalPowerRequest());
+	        
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	        System.out.println("AC Spot Data:");
-	        System.out.printf("\tPhase 1 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n", Misc.tokW(inverter.Data.Pac1), Misc.toVolt(inverter.Data.Uac1), Misc.toAmp(inverter.Data.Iac1));
-	        System.out.printf("\tPhase 2 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n", Misc.tokW(inverter.Data.Pac2), Misc.toVolt(inverter.Data.Uac2), Misc.toAmp(inverter.Data.Iac2));
-	        System.out.printf("\tPhase 3 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n", Misc.tokW(inverter.Data.Pac3), Misc.toVolt(inverter.Data.Uac3), Misc.toAmp(inverter.Data.Iac3));
-	        System.out.printf("\tTotal Pac   : %7.3fkW\n", Misc.tokW(inverter.Data.TotalPac));
-		    
+	        System.out.printf("\tPhase 1 Pac : %7dW - Uac: %6.2fV - Iac: %6.3fA\n", power.getValue1(), voltAmp.getVoltage().getValue1(), voltAmp.getAmpere().getValue1());
+	        System.out.printf("\tPhase 2 Pac : %7dW - Uac: %6.2fV - Iac: %6.3fA\n", power.getValue2(), voltAmp.getVoltage().getValue2(), voltAmp.getAmpere().getValue2());
+	        System.out.printf("\tPhase 3 Pac : %7dW - Uac: %6.2fV - Iac: %6.3fA\n", power.getValue3(), voltAmp.getVoltage().getValue3(), voltAmp.getAmpere().getValue3());
+	        System.out.printf("\tTotal Pac   : %7.3fkW\n", Misc.tokW(totalPower.intValue()));
+
 		    inverter.getInverterData(InverterDataType.SpotGridFrequency);
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	        System.out.printf("Grid Freq. : %.2fHz\n", Misc.toHz(inverter.Data.GridFreq));

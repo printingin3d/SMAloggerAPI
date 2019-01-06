@@ -7,8 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
-import eu.printingin3d.smalogger.api.smajava.SmaLogger;
+import eu.printingin3d.smalogger.api.requestvisitor.SpotAcPowerRequest;
+import eu.printingin3d.smalogger.api.requestvisitor.SpotAcVoltageRequest;
+import eu.printingin3d.smalogger.api.response.ACVoltageAmpereResponse;
+import eu.printingin3d.smalogger.api.response.ThreePhaseResponse;
 import eu.printingin3d.smalogger.api.smajava.Misc;
+import eu.printingin3d.smalogger.api.smajava.SmaLogger;
 
 /**
  * Example of usage of this api while using a thread to keep reading the
@@ -52,7 +56,6 @@ public class ThreadedTest implements Runnable {
 	@Override
 	public void run() {
 		try {
-			boolean loggedOn = false;
 			int counter = RUN_COUNT;
 			System.out.println("logging on inverter...");
 
@@ -67,46 +70,39 @@ public class ThreadedTest implements Runnable {
 			System.out.printf("Device Type:      %s\n", inverter.Data.DeviceType);
 			System.out.printf("Software Version: %s\n", inverter.Data.SWVersion);
 			System.out.printf("Serial number:    %d\n", inverter.Data.Serial);
-			if (loggedOn) {
-				while (counter > 0) {
-					inverter.getInverterData(InverterDataType.EnergyProduction);
-					System.out.println("==================================");
-					System.out.println("Energy Production:");
-					System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
-					System.out.printf("\tETotal: %.3fkWh\n", Misc.tokWh(inverter.Data.ETotal));
+			while (counter > 0) {
+				inverter.getInverterData(InverterDataType.EnergyProduction);
+				System.out.println("==================================");
+				System.out.println("Energy Production:");
+				System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
+				System.out.printf("\tETotal: %.3fkWh\n", Misc.tokWh(inverter.Data.ETotal));
 
-					inverter.getInverterData(InverterDataType.SpotACPower);
-					inverter.getInverterData(InverterDataType.SpotACVoltage);
-					inverter.getInverterData(InverterDataType.SpotACTotalPower);
+		        ThreePhaseResponse<Integer> power = inverter.getInverterData(new SpotAcPowerRequest());
+		        ACVoltageAmpereResponse voltAmp = inverter.getInverterData(new SpotAcVoltageRequest());
 
-					// Calculate missing AC Spot Values
-					inverter.calcMissingSpot();
+				System.out.println("AC Spot Data:");
+				System.out.printf("\tPhase 1 Pac : %7dW - Uac: %6.2fV - Iac: %6.3fA\n",
+						power.getValue1(), voltAmp.getVoltage().getValue1(),
+						voltAmp.getAmpere().getValue1());
+				System.out.printf("\tPhase 2 Pac : %7dW - Uac: %6.2fV - Iac: %6.3fA\n",
+						power.getValue2(), voltAmp.getVoltage().getValue2(),
+						voltAmp.getAmpere().getValue2());
+				System.out.printf("\tPhase 3 Pac : %7dW - Uac: %6.2fV - Iac: %6.3fA\n",
+						power.getValue3(), voltAmp.getVoltage().getValue3(),
+						voltAmp.getAmpere().getValue3());
+				System.out.printf("\tTotal Pac   : %7dW\n", power.getTotal());
 
-					System.out.println("AC Spot Data:");
-					System.out.printf("\tPhase 1 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n",
-							Misc.tokW(inverter.Data.Pac1), Misc.toVolt(inverter.Data.Uac1),
-							Misc.toAmp(inverter.Data.Iac1));
-					System.out.printf("\tPhase 2 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n",
-							Misc.tokW(inverter.Data.Pac2), Misc.toVolt(inverter.Data.Uac2),
-							Misc.toAmp(inverter.Data.Iac2));
-					System.out.printf("\tPhase 3 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n",
-							Misc.tokW(inverter.Data.Pac3), Misc.toVolt(inverter.Data.Uac3),
-							Misc.toAmp(inverter.Data.Iac3));
-					System.out.printf("\tTotal Pac   : %7.3fkW\n", Misc.tokW(inverter.Data.TotalPac));
-
-					counter--;
-					try {
-						Thread.sleep(WAIT_TIME);
-					} catch (InterruptedException e) {
-						counter = 0;
-						e.printStackTrace();
-					}
+				counter--;
+				try {
+					Thread.sleep(WAIT_TIME);
+				} catch (InterruptedException e) {
+					counter = 0;
+					e.printStackTrace();
 				}
 			}
 			stop();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOGGER.error("Exception: ", e1);
 		}
 	}
 

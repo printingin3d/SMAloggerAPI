@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import eu.printingin3d.smalogger.api.eth.EthPacketHeaderL1;
 import eu.printingin3d.smalogger.api.eth.EthPacketHeaderL1L2;
 import eu.printingin3d.smalogger.api.exception.NoDataReceivedException;
-import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
+import eu.printingin3d.smalogger.api.inverterdata.IInverterCommand;
 import eu.printingin3d.smalogger.api.smajava.Misc;
 
 public class SmaConnection {
@@ -110,7 +110,7 @@ public class SmaConnection {
         ethernet.send(ip);
 	}
 	
-	protected void requestInverterData(InverterDataType dataType) throws IOException
+	protected void requestInverterData(IInverterCommand dataType) throws IOException
 	{
 		ethernet.writePacketHeader();
         ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);

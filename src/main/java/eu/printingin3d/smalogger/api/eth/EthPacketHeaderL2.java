@@ -4,13 +4,11 @@ import java.nio.ByteBuffer;
 
 public class EthPacketHeaderL2 {
 	private final int  MagicNumber;      // Level 2 packet signature 00 10 60 65
-    private final byte longWords;        // int(PacketLen/4)
-    private final byte ctrl;
     
     public EthPacketHeaderL2(ByteBuffer bb) {
     	MagicNumber = bb.getInt();
-        longWords = bb.get();
-        ctrl = bb.get();
+        bb.get();   // longWords  = int(PacketLen/4)
+        bb.get();   // ctrl
     }
     
     public int getMagicNumber() {

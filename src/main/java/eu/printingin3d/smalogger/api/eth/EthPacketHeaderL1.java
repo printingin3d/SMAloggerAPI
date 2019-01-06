@@ -3,12 +3,11 @@ package eu.printingin3d.smalogger.api.eth;
 import java.nio.ByteBuffer;
 
 public class EthPacketHeaderL1 {
-    private final int  MagicNumber;      // Packet signature 53 4d 41 00 (SMA\0)
     private final byte hiPacketLen;      // Packet length stored as big endian
     private final byte loPacketLen ;     // Packet length Low Byte
     
     public EthPacketHeaderL1(ByteBuffer bb) {
-    	MagicNumber = bb.getInt();
+    	bb.getInt();  // MagicNumber = Packet signature 53 4d 41 00 (SMA\0)
     	// Just skip 2x32 bit of unknown data
     	// 00 04 02 a0
         // 00 00 00 01
