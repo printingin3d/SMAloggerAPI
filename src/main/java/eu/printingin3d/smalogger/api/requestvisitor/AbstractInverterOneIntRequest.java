@@ -1,21 +1,23 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.rmi.UnexpectedException;
-import java.util.Date;
+import java.util.function.IntFunction;
 
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
-public abstract class AbstractInverterOneIntRequest extends AbstractInverterValueRequest<Integer> {
+public abstract class AbstractInverterOneIntRequest<T> extends AbstractInverterValueRequest<T> {
 	private final LriDef expected;
+	private final IntFunction<T> converter;
 	
 	private int value;
 
-	public AbstractInverterOneIntRequest(LriDef expected) {
+	public AbstractInverterOneIntRequest(LriDef expected, IntFunction<T> converter) {
 		this.expected = expected;
+		this.converter = converter;
 	}
 
 	@Override
-	protected final void putValue(LriDef lri, int value, Date datetime) throws UnexpectedException {
+	protected final void putValue(LriDef lri, int value) throws UnexpectedException {
 		if (lri == expected) {
 			this.value = value;
 		} else {
@@ -24,8 +26,8 @@ public abstract class AbstractInverterOneIntRequest extends AbstractInverterValu
 	}
 
 	@Override
-	public final Integer closeParse() {
-		return Integer.valueOf(value);
+	public final T closeParse() {
+		return converter.apply(value);
 	}
 
 }

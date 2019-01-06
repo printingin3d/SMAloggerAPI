@@ -23,6 +23,9 @@ public class Inverter extends SmaConnection {
 	
 	public InverterData Data;
 	
+	private short SUSyID;
+	private long Serial;
+	
 	/**
 	 * Creates a new inverter.
 	 * NOTE: This method is used by the SMALogger and should not be uses manually.
@@ -38,15 +41,14 @@ public class Inverter extends SmaConnection {
 		Data = new InverterData();
 	}
 	
-	/**
-	 * Returns the ip adress of this inverter.
-	 * @return A string containing the IP adress of the inverter.
-	 */
-	public String getIP()
-	{
-		return super.ip;
+	public short getSUSyID() {
+		return SUSyID;
 	}
-	
+
+	public long getSerial() {
+		return Serial;
+	}
+
 	/**
 	 * Sends a logon request to the inverter which creates a connection.
 	 * Use this before getting data from the inverter but after the main connection was created.
@@ -81,8 +83,8 @@ public class Inverter extends SmaConnection {
 		initConnection();
 		ByteBuffer packet = getPacket();
     	EthPacket pckt2 = new EthPacket(packet);
-    	Data.SUSyID = pckt2.getSource().getSUSyID();
-    	Data.Serial = pckt2.getSource().getSerial();
+    	SUSyID = pckt2.getSource().getSUSyID();
+    	Serial = pckt2.getSource().getSerial();
 		//Then login.
 		smaLogin(userGroup, password);
 		ByteBuffer packet2 = getPacket();
@@ -130,7 +132,7 @@ public class Inverter extends SmaConnection {
             	//Check if we received the package from the right inverter, not sure if
             	//this works with multiple inverters.
             	//We do this by checking if the susyd and serial is equal to this inverter object's susyd and serial.
-            	boolean rightOne = Data.SUSyID == packet.getShort(15) && Data.Serial == packet.getInt(17);
+            	boolean rightOne = SUSyID == packet.getShort(15) && Serial == packet.getInt(17);
 
             	if (rightOne) {
                     validPcktID = 1;
@@ -155,42 +157,13 @@ public class Inverter extends SmaConnection {
 								value = 0;
 							}
                         }                       
-                        // fix: We can't rely on dataType because it can be both 0x00 or 0x40 for DWORDs
-                        if ((lri == LriDef.MeteringDyWhOut) || (lri == LriDef.MeteringTotWhOut) || (lri == LriDef.MeteringTotFeedTms) || (lri == LriDef.MeteringTotOpTms))	//QWORD
-                        {
-                        	//All data that needs a long value
-                        	long value64 = packet.getLong(ix + 8);
-                            if ((value64 == Misc.NaN_S64) || (value64 == Misc.NaN_U64)) {
-								value64 = 0;
-							}                      
-                            
-                            Data.SetInverterData64(lri, value64, datetime);
-                        }
-                        else if(lri == LriDef.NameplateLocation)
+                        if(lri == LriDef.NameplateLocation)
                         {
                         	//INV_NAME
                         	int DEVICE_NAME_LENGTH = 33; //32 bytes + terminating zero
                             Data.SetInverterDataINVNAME(new String(Arrays.copyOfRange(packet.array(), ix+8, ix+8+DEVICE_NAME_LENGTH-1)).trim(), datetime);
                         }                       
-                        else if(lri == LriDef.NameplatePkgRev)
-                        {
-                        	//INV_SWVER
-                        	char Vtype = (char) packet.get(ix + 24);
-                            String ReleaseType;
-                            if (Vtype > 5) {
-								ReleaseType = String.format("%c", Vtype);
-							}
-							else {
-								ReleaseType = String.format("%c", "NEABRS".charAt(Vtype));//NOREV-EXPERIMENTAL-ALPHA-BETA-RELEASE-SPECIAL
-							}
-                            char Vbuild = (char) packet.get(ix + 25);
-                            char Vminor = (char) packet.get(ix + 26);
-                            char Vmajor = (char) packet.get(ix + 27);
-                            //Vmajor and Vminor = 0x12 should be printed as '12' and not '18' (BCD)
-                            String version = String.format("%c%c.%c%c.%02d.%s", '0'+(Vmajor >> 4), '0'+(Vmajor & 0x0F), '0'+(Vminor >> 4), '0'+(Vminor & 0x0F), (int)Vbuild, ReleaseType);  
-                            Data.SetInverterDataSWVER(version, datetime);
-                        }
-                        else if(lri == LriDef.OperationHealth || lri == LriDef.OperationGriSwStt || lri == LriDef.NameplateMainModel || lri == LriDef.NameplateModel)
+                        else if(lri == LriDef.OperationGriSwStt || lri == LriDef.NameplateMainModel || lri == LriDef.NameplateModel)
                         {
                         	//All cases which need the attribute value
                         	//INV_STATUS
@@ -228,7 +201,7 @@ public class Inverter extends SmaConnection {
                     }
                 }
             	else {
-            		LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", Data.SUSyID, packet.getShort(15));
+            		LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", SUSyID, packet.getShort(15));
             	}
             }
             else {
@@ -252,14 +225,14 @@ public class Inverter extends SmaConnection {
 		
 		while(true) {
 			ByteBuffer packet = getPacket();
-			
+	        
 			short rcvpcktID = (short) (packet.get(27) & 0x7FFF);
 			if (ethernet.pcktID == rcvpcktID)
 			{
 				//Check if we received the package from the right inverter, not sure if
 				//this works with multiple inverters.
 				//We do this by checking if the susyd and serial is equal to this inverter object's susyd and serial.
-				boolean rightOne = Data.SUSyID == packet.getShort(15) && Data.Serial == packet.getInt(17);
+				boolean rightOne = SUSyID == packet.getShort(15) && Serial == packet.getInt(17);
 				
 				if (rightOne) {
 					packet.position(41);   // the first non header byte
@@ -277,7 +250,7 @@ public class Inverter extends SmaConnection {
                     break;
 				}
 				else {
-					LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", Data.SUSyID, packet.getShort(15));
+					LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", SUSyID, packet.getShort(15));
 				}
 			}
 			else {

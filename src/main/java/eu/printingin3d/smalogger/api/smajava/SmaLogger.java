@@ -34,7 +34,7 @@ public class SmaLogger implements Closeable {
 	 */
 	public void initialize() throws IOException {
 	    //Lets just use the english taglist for now.
-	    TagDefs.GetInstance().readall("en-US");
+	    TagDefs.getInstance().readall("en-US");
 	    
 		//So the port was hardcoded in the config so why not hardcode it here, for now...
 		ethernet.connect((short)9522);

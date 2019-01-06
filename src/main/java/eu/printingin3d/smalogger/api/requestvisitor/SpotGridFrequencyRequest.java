@@ -2,10 +2,10 @@ package eu.printingin3d.smalogger.api.requestvisitor;
 
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
-public class SpotAcTotalPowerRequest extends AbstractInverterOneIntRequest<Integer> {
+public class SpotGridFrequencyRequest extends AbstractInverterOneIntRequest<Double> {
 
-	public SpotAcTotalPowerRequest() {
-		super(LriDef.GridMsTotW, Integer::valueOf);
+	public SpotGridFrequencyRequest() {
+		super(LriDef.GridMsHz, x -> Double.valueOf(x * 0.01));
 	}
 
 	@Override
@@ -15,12 +15,12 @@ public class SpotAcTotalPowerRequest extends AbstractInverterOneIntRequest<Integ
 
 	@Override
 	public long getFirst() {
-		return 0x00263F00;
+		return 0x00465700;
 	}
 
 	@Override
 	public long getLast() {
-		return 0x00263FFF;
+		return 0x004657FF;
 	}
 
 }

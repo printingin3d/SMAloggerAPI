@@ -1,6 +1,7 @@
 package eu.printingin3d.smalogger.api.smajava;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Misc 
 {
@@ -48,6 +49,12 @@ public class Misc
 	}
 
 	public static String printDate(long date)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		return sdf.format(date);
+	}
+	
+	public static String printDate(Date date)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		return sdf.format(date);

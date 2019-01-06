@@ -64,7 +64,7 @@ public class TagDefs {
 		
 	}
 	
-	public static TagDefs GetInstance()
+	public static TagDefs getInstance()
 	{
 		if(instance == null)
 		{
@@ -208,7 +208,7 @@ public class TagDefs {
 	
 	public String getDesc(int tagID, String _default) 
 	{
-		return m_tagdefmap.get(tagID).getDesc() == null ? _default : m_tagdefmap.get(tagID).getDesc(); 
+		return (m_tagdefmap.get(tagID)==null || m_tagdefmap.get(tagID).getDesc() == null) ? _default : m_tagdefmap.get(tagID).getDesc(); 
 	}
 	
 	public int size()

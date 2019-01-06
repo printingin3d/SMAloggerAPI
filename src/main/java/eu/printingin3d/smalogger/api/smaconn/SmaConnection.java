@@ -36,14 +36,22 @@ public class SmaConnection {
 	
 	protected Ethernet ethernet;
 	
-	protected String ip;
+	protected final String ip;
 	
-	public SmaConnection(Ethernet eth, String inverterIP)
-	{
+	public SmaConnection(Ethernet eth, String inverterIP) {
 		this.ethernet = eth;
 		this.ip = inverterIP;
 	}
 	
+	/**
+	 * Returns the ip adress of this inverter.
+	 * @return A string containing the IP adress of the inverter.
+	 */
+	public String getIP()
+	{
+		return ip;
+	}
+
 	protected void initConnection() throws IOException
 	{
 		ethernet.writePacketHeader();

@@ -9,8 +9,13 @@ import org.slf4j.LoggerFactory;
 
 import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
-import eu.printingin3d.smalogger.api.smajava.SmaLogger;
+import eu.printingin3d.smalogger.api.requestvisitor.EnergyProductionRequest;
+import eu.printingin3d.smalogger.api.requestvisitor.OperationTimeRequest;
+import eu.printingin3d.smalogger.api.requestvisitor.SoftwareVersionRequest;
+import eu.printingin3d.smalogger.api.response.EnergyProductionResponse;
+import eu.printingin3d.smalogger.api.response.OperationTimeResponse;
 import eu.printingin3d.smalogger.api.smajava.Misc;
+import eu.printingin3d.smalogger.api.smajava.SmaLogger;
 
 /**
  * Example of how using this api for multiple inverters should work.
@@ -22,7 +27,7 @@ public class MultiInverterTest {
 
 	public static void main(String[] args) throws IOException {
 		final String PASSWORD = "0000";	//Default password
-		List<Inverter> inverters = new ArrayList<Inverter>();
+		List<Inverter> inverters = new ArrayList<>();
 		
 		try (SmaLogger smaLogger = new SmaLogger()) {
 			LOGGER.info("Initializing SMA Logger");
@@ -59,24 +64,22 @@ public class MultiInverterTest {
 				System.out.printf("#####\n"
 						+ "\tInverter data for %s\n"
 						+ "#####\n", inverter.getIP());
-				inverter.getInverterData(InverterDataType.SoftwareVersion);
 			    
 			    inverter.getInverterData(InverterDataType.TypeLabel);
-	            System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
+	            System.out.printf("SUSyID: %d - SN: %d\n", inverter.getSUSyID(), inverter.getSerial());
 	            System.out.printf("Device Name:      %s\n", inverter.Data.DeviceName);
 	            System.out.printf("Device Class:     %s\n", inverter.Data.DeviceClass);
 	            System.out.printf("Device Type:      %s\n", inverter.Data.DeviceType);
-	            System.out.printf("Software Version: %s\n", inverter.Data.SWVersion);
-	            System.out.printf("Serial number:    %d\n", inverter.Data.Serial);
+	            System.out.printf("Software Version: %s\n", inverter.getInverterData(new SoftwareVersionRequest()));
+	            System.out.printf("Serial number:    %d\n", inverter.getSerial());
 			    
-			    inverter.getInverterData(InverterDataType.EnergyProduction);
-			    inverter.getInverterData(InverterDataType.OperationTime);
-	            System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
+		        EnergyProductionResponse energyProduction = inverter.getInverterData(new EnergyProductionRequest());
+		        OperationTimeResponse operationTime = inverter.getInverterData(new OperationTimeRequest());
 	            System.out.println("Energy Production:");
-	            System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
-	            System.out.printf("\tETotal: %.3fkWh\n", Misc.tokWh(inverter.Data.ETotal));
-	            System.out.printf("\tOperation Time: %.2fh\n", Misc.toHour(inverter.Data.OperationTime));
-	            System.out.printf("\tFeed-In Time  : %.2fh\n", Misc.toHour(inverter.Data.FeedInTime));
+		        System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(energyProduction.getTodayEnergy()));
+		        System.out.printf("\tETotal: %.3fkWh\n", Misc.tokWh(energyProduction.getTotalEnergy()));
+		        System.out.printf("\tOperation Time: %.2fh\n", Misc.toHour(operationTime.getOperationTime()));
+		        System.out.printf("\tFeed-In Time  : %.2fh\n", Misc.toHour(operationTime.getFeedInTime()));
 			}
 			
 			System.out.println("logging off inverters...");

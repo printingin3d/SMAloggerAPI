@@ -8,14 +8,19 @@ import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.inverterdata.IInverterCommand;
 
 public abstract class AbstractInverterRequest<T> implements IInverterCommand {
+	private Date datetime;
 
-	protected abstract void parse(LriDef lri, ByteBuffer bb, Date datetime) throws UnexpectedException;
+	protected abstract void parse(LriDef lri, ByteBuffer bb) throws UnexpectedException;
 	
 	public void parseOneSegment(LriDef lri, ByteBuffer bb) throws UnexpectedException {
-		Date datetime = new Date(bb.getInt() * 1000l);
+		this.datetime = new Date(bb.getInt() * 1000l);
 		
-		parse(lri, bb, datetime);
+		parse(lri, bb);
 	}
 	
 	public abstract T closeParse();
+
+	public Date getDatetime() {
+		return datetime;
+	}
 }

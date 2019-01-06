@@ -1,7 +1,6 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.rmi.UnexpectedException;
-import java.util.Date;
 
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.ACVoltageAmpereResponse;
@@ -39,7 +38,7 @@ public class SpotAcVoltageRequest extends AbstractInverterValueRequest<ACVoltage
 	}
 
 	@Override
-	protected void putValue(LriDef lri, int value, Date datetime) throws UnexpectedException {
+	protected void putValue(LriDef lri, int value) throws UnexpectedException {
 		switch (lri) {
 		case GridMsPhVphsA:
 			this.volt1 = value;
