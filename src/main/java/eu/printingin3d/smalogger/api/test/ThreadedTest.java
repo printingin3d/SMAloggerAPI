@@ -43,7 +43,7 @@ public class ThreadedTest implements Runnable {
 	public void stop() throws IOException {
 		LOGGER.info("logging off inverter...");
 
-		inverter.Logoff();
+		inverter.logoff();
 
 		LOGGER.info("Shutting down SMA Logger.");
 		smaLogger.close();
@@ -59,8 +59,8 @@ public class ThreadedTest implements Runnable {
 			System.out.printf("Inverter %s logged on... ", inverter.getIP());
 			inverter.logon(PASSWORD);
 
-			inverter.GetInverterData(InverterDataType.SoftwareVersion);
-			inverter.GetInverterData(InverterDataType.TypeLabel);
+			inverter.getInverterData(InverterDataType.SoftwareVersion);
+			inverter.getInverterData(InverterDataType.TypeLabel);
 			System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 			System.out.printf("Device Name:      %s\n", inverter.Data.DeviceName);
 			System.out.printf("Device Class:     %s\n", inverter.Data.DeviceClass);
@@ -69,18 +69,18 @@ public class ThreadedTest implements Runnable {
 			System.out.printf("Serial number:    %d\n", inverter.Data.Serial);
 			if (loggedOn) {
 				while (counter > 0) {
-					inverter.GetInverterData(InverterDataType.EnergyProduction);
+					inverter.getInverterData(InverterDataType.EnergyProduction);
 					System.out.println("==================================");
 					System.out.println("Energy Production:");
 					System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
 					System.out.printf("\tETotal: %.3fkWh\n", Misc.tokWh(inverter.Data.ETotal));
 
-					inverter.GetInverterData(InverterDataType.SpotACPower);
-					inverter.GetInverterData(InverterDataType.SpotACVoltage);
-					inverter.GetInverterData(InverterDataType.SpotACTotalPower);
+					inverter.getInverterData(InverterDataType.SpotACPower);
+					inverter.getInverterData(InverterDataType.SpotACVoltage);
+					inverter.getInverterData(InverterDataType.SpotACTotalPower);
 
 					// Calculate missing AC Spot Values
-					inverter.CalcMissingSpot();
+					inverter.calcMissingSpot();
 
 					System.out.println("AC Spot Data:");
 					System.out.printf("\tPhase 1 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n",

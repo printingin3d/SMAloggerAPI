@@ -53,9 +53,9 @@ public class SmaConnection {
 	    ethernet.writeLong(0);
 	    ethernet.writeLong(0);
 	    ethernet.writePacketLength();
-
+        
 	    //Send packet to first inverter
-	    ethernet.send(ip);    
+	    ethernet.send(ip);
 	}
 	
 	protected void smaLogin(UserGroup userGroup, char[] password) throws IOException
@@ -136,7 +136,7 @@ public class SmaConnection {
 	        }
 	        else {
 	        	EthPacketHeaderL1L2 pkHdr = new EthPacketHeaderL1L2(commBuf);
-	        	int pkLen = ((pkHdr.pcktHdrL1.hiPacketLen << 8) + pkHdr.pcktHdrL1.loPacketLen) & 0xff;	//0xff to convert it to unsigned?
+	        	int pkLen = ((pkHdr.getPcktHdrL1().getHiPacketLen() << 8) + pkHdr.getPcktHdrL1().getLoPacketLen()) & 0xff;	//0xff to convert it to unsigned?
 
 	            //More data after header?
 	            if (pkLen > 0) {
@@ -144,7 +144,7 @@ public class SmaConnection {
 						Misc.HexDump(commBuf, bib, 10);
 					}
 
-	                if (pkHdr.pcktHdrL2.MagicNumber == ethernet.ETH_L2SIGNATURE) {
+	                if (pkHdr.getPcktHdrL2().getMagicNumber() == ethernet.ETH_L2SIGNATURE) {
 	                	ByteBuffer bb = ByteBuffer.allocate(bib - EthPacketHeaderL1.getSize()+1);
 	                	bb.order(ByteOrder.LITTLE_ENDIAN);
 	                	// Copy CommBuf to packetbuffer

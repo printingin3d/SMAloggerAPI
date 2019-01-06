@@ -16,12 +16,12 @@ public class SBFNet {
 	public final long ETH_L2SIGNATURE = 0x65601000;
 
 	private int packetposition = 0;
-	public byte[] pcktBuf = new byte[maxpcktBufsize];
+	protected byte[] pcktBuf = new byte[maxpcktBufsize];
 
 	public short pcktID = 1;
 
-	public short AppSUSyID;
-	public long AppSerial;
+	private short AppSUSyID;
+	private long AppSerial;
 
 	/***
 	 * Clears the buffer and sets packetposition to 0.

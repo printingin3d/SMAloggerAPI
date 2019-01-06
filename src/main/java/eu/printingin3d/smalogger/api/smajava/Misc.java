@@ -46,15 +46,7 @@ public class Misc
 	{
 		return value / 100f;
 	}
-	
-	public static short shortSwap(short s) {
-		//return s;
-		int b1 = s & 0xff;
-	    int b2 = (s >> 8) & 0xff;
 
-	    return (short) (b1 << 8 | b2 << 0);
-	}
-	
 	public static String printDate(long date)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");

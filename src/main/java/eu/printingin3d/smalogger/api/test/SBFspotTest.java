@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import eu.printingin3d.smalogger.api.inverter.InvDeviceClass;
 import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
+import eu.printingin3d.smalogger.api.smajava.Misc;
 import eu.printingin3d.smalogger.api.smajava.SmaLogger;
 import eu.printingin3d.smalogger.api.smajava.TagDefs;
-import eu.printingin3d.smalogger.api.smajava.Misc;
 
 /**
  * This example basically does the exact same as the original SBFspot program minus the logging stuff
@@ -38,21 +38,21 @@ public class SBFspotTest {
 			LOGGER.info("Inverter {} logged on. ", inverter.getIP());
 			
 			System.out.println("Getting some data...");
-			inverter.GetInverterData(InverterDataType.SoftwareVersion);
-		    inverter.GetInverterData(InverterDataType.TypeLabel);
+			inverter.getInverterData(InverterDataType.SoftwareVersion);
+		    inverter.getInverterData(InverterDataType.TypeLabel);
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	        System.out.printf("Device Name:      %s\n", inverter.Data.DeviceName);
 	        System.out.printf("Device Class:     %s\n", inverter.Data.DeviceClass);
 	        System.out.printf("Device Type:      %s\n", inverter.Data.DeviceType);
 	        System.out.printf("Software Version: %s\n", inverter.Data.SWVersion);
 	        System.out.printf("Serial number:    %d\n", inverter.Data.Serial);
-		    inverter.GetInverterData(InverterDataType.BatteryChargeStatus);
+		    inverter.getInverterData(InverterDataType.BatteryChargeStatus);
 		    if (inverter.Data.DevClass == InvDeviceClass.BatteryInverter) {
 	            System.out.printf("SUSyID: %d - SN: %lu\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	            System.out.printf("Batt. Charging Status: %lu%%\n", inverter.Data.BatChaStt);
 		    }
 	
-			inverter.GetInverterData(InverterDataType.BatteryInfo);
+			inverter.getInverterData(InverterDataType.BatteryInfo);
 		    if (inverter.Data.DevClass == InvDeviceClass.BatteryInverter)
 		    {
 	            System.out.printf("SUSyID: %d - SN: %lu\n", inverter.Data.SUSyID, inverter.Data.Serial);
@@ -61,33 +61,33 @@ public class SBFspotTest {
 	            System.out.printf("Batt. Current    : %2.3fA\n", Misc.toAmp(inverter.Data.BatAmp));
 		    }
 	
-		    inverter.GetInverterData(InverterDataType.DeviceStatus);
+		    inverter.getInverterData(InverterDataType.DeviceStatus);
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 			System.out.printf("Device Status:      %s\n", TagDefs.GetInstance().getDesc(inverter.Data.DeviceStatus, "?"));
 	
-			inverter.GetInverterData(InverterDataType.InverterTemperature);
+			inverter.getInverterData(InverterDataType.InverterTemperature);
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 			//System.out.printf("Device Temperature: %3.1f%sC\n", (float)(inverter.Data.Temperature / 100f), misc.SYM_DEGREE); // degree symbol is different on windows/linux
 			System.out.printf("Device Temperature: %3.1f%sC\n", Misc.toCelc(inverter.Data.Temperature), Misc.SYM_DEGREE); // degree symbol is different on windows/linux
 	
 			if (inverter.Data.DevClass == InvDeviceClass.SolarInverter) {
-				inverter.GetInverterData(InverterDataType.GridRelayStatus);
+				inverter.getInverterData(InverterDataType.GridRelayStatus);
 	            System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 				System.out.printf("GridRelay Status:      %s\n", TagDefs.GetInstance().getDesc(inverter.Data.GridRelayStatus, "?"));
 		    }
 	
-		    inverter.GetInverterData(InverterDataType.MaxACPower);
+		    inverter.getInverterData(InverterDataType.MaxACPower);
 	        //TODO: REVIEW THIS PART (getMaxACPower & getMaxACPower2 should be 1 function)
 	        if (inverter.Data.Pmax1 == 0) {
-	        	inverter.GetInverterData(InverterDataType.MaxACPower2);
+	        	inverter.getInverterData(InverterDataType.MaxACPower2);
 	        }
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	        System.out.printf("Pac max phase 1: %dW\n", inverter.Data.Pmax1);
 	        System.out.printf("Pac max phase 2: %dW\n", inverter.Data.Pmax2);
 	        System.out.printf("Pac max phase 3: %dW\n", inverter.Data.Pmax3);
 	
-		    inverter.GetInverterData(InverterDataType.EnergyProduction);
-		    inverter.GetInverterData(InverterDataType.OperationTime);
+		    inverter.getInverterData(InverterDataType.EnergyProduction);
+		    inverter.getInverterData(InverterDataType.OperationTime);
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	        System.out.println("Energy Production:");
 	        System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
@@ -95,11 +95,11 @@ public class SBFspotTest {
 	        System.out.printf("\tOperation Time: %.2fh\n", Misc.toHour(inverter.Data.OperationTime));
 	        System.out.printf("\tFeed-In Time  : %.2fh\n", Misc.toHour(inverter.Data.FeedInTime));
 	
-		    inverter.GetInverterData(InverterDataType.SpotDCPower);
-		    inverter.GetInverterData(InverterDataType.SpotDCVoltage);
+		    inverter.getInverterData(InverterDataType.SpotDCPower);
+		    inverter.getInverterData(InverterDataType.SpotDCVoltage);
 	
 		    //Calculate missing DC Spot Values
-		    inverter.CalcMissingSpot();
+		    inverter.calcMissingSpot();
 	
 			inverter.Data.calPdcTot = inverter.Data.Pdc1 + inverter.Data.Pdc2;
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
@@ -107,12 +107,12 @@ public class SBFspotTest {
 	        System.out.printf("\tString 1 Pdc: %7.3fkW - Udc: %6.2fV - Idc: %6.3fA\n", Misc.tokW(inverter.Data.Pdc1), Misc.toVolt(inverter.Data.Udc1), Misc.toAmp(inverter.Data.Idc1));
 	        System.out.printf("\tString 2 Pdc: %7.3fkW - Udc: %6.2fV - Idc: %6.3fA\n", Misc.tokW(inverter.Data.Pdc2), Misc.toVolt(inverter.Data.Udc2), Misc.toAmp(inverter.Data.Idc2));
 	
-		    inverter.GetInverterData(InverterDataType.SpotACPower);
-		    inverter.GetInverterData(InverterDataType.SpotACVoltage);
-		    inverter.GetInverterData(InverterDataType.SpotACTotalPower);
+		    inverter.getInverterData(InverterDataType.SpotACPower);
+		    inverter.getInverterData(InverterDataType.SpotACVoltage);
+		    inverter.getInverterData(InverterDataType.SpotACTotalPower);
 	
 		    //Calculate missing AC Spot Values
-		    inverter.CalcMissingSpot();
+		    inverter.calcMissingSpot();
 	
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	        System.out.println("AC Spot Data:");
@@ -121,7 +121,7 @@ public class SBFspotTest {
 	        System.out.printf("\tPhase 3 Pac : %7.3fkW - Uac: %6.2fV - Iac: %6.3fA\n", Misc.tokW(inverter.Data.Pac3), Misc.toVolt(inverter.Data.Uac3), Misc.toAmp(inverter.Data.Iac3));
 	        System.out.printf("\tTotal Pac   : %7.3fkW\n", Misc.tokW(inverter.Data.TotalPac));
 		    
-		    inverter.GetInverterData(InverterDataType.SpotGridFrequency);
+		    inverter.getInverterData(InverterDataType.SpotGridFrequency);
 	        System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	        System.out.printf("Grid Freq. : %.2fHz\n", Misc.toHz(inverter.Data.GridFreq));
 	
@@ -143,7 +143,7 @@ public class SBFspotTest {
 			
 			System.out.println("logging off inverter...");
 	
-			inverter.Logoff();
+			inverter.logoff();
 			
 			System.out.println("Shutting down SMA Logger.");
 		}

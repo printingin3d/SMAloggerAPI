@@ -59,9 +59,9 @@ public class MultiInverterTest {
 				System.out.printf("#####\n"
 						+ "\tInverter data for %s\n"
 						+ "#####\n", inverter.getIP());
-				inverter.GetInverterData(InverterDataType.SoftwareVersion);
+				inverter.getInverterData(InverterDataType.SoftwareVersion);
 			    
-			    inverter.GetInverterData(InverterDataType.TypeLabel);
+			    inverter.getInverterData(InverterDataType.TypeLabel);
 	            System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	            System.out.printf("Device Name:      %s\n", inverter.Data.DeviceName);
 	            System.out.printf("Device Class:     %s\n", inverter.Data.DeviceClass);
@@ -69,8 +69,8 @@ public class MultiInverterTest {
 	            System.out.printf("Software Version: %s\n", inverter.Data.SWVersion);
 	            System.out.printf("Serial number:    %d\n", inverter.Data.Serial);
 			    
-			    inverter.GetInverterData(InverterDataType.EnergyProduction);
-			    inverter.GetInverterData(InverterDataType.OperationTime);
+			    inverter.getInverterData(InverterDataType.EnergyProduction);
+			    inverter.getInverterData(InverterDataType.OperationTime);
 	            System.out.printf("SUSyID: %d - SN: %d\n", inverter.Data.SUSyID, inverter.Data.Serial);
 	            System.out.println("Energy Production:");
 	            System.out.printf("\tEToday: %.3fkWh\n", Misc.tokWh(inverter.Data.EToday));
@@ -83,7 +83,7 @@ public class MultiInverterTest {
 	
 			for(Inverter inverter : inverters)
 			{
-				inverter.Logoff();
+				inverter.logoff();
 			}
 			
 			System.out.println("Shutting down SMA Logger.");

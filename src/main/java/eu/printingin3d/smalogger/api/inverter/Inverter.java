@@ -80,17 +80,17 @@ public class Inverter extends SmaConnection {
 		initConnection();
 		ByteBuffer packet = getPacket();
     	EthPacket pckt2 = new EthPacket(packet);
-    	Data.SUSyID = pckt2.Source.SUSyID;
-    	Data.Serial = pckt2.Source.Serial;
+    	Data.SUSyID = pckt2.getSource().getSUSyID();
+    	Data.Serial = pckt2.getSource().getSerial();
 		//Then login.
 		smaLogin(userGroup, password);
 		ByteBuffer packet2 = getPacket();
         EthPacket pckt = new EthPacket(packet2);
-        if (ethernet.pcktID != ((pckt.PacketID) & 0x7FFF)) {   // InValid Packet ID
-        	throw new IOException(String.format("Packet ID mismatch. Expected %d, received %d", ethernet.pcktID, ((pckt.PacketID) & 0x7FFF)));
+        if (ethernet.pcktID != ((pckt.getPacketID()) & 0x7FFF)) {   // InValid Packet ID
+        	throw new IOException(String.format("Packet ID mismatch. Expected %d, received %d", ethernet.pcktID, ((pckt.getPacketID()) & 0x7FFF)));
         }
 
-		if ((Misc.shortSwap(pckt.ErrorCode) == 0x0100)) {
+		if (pckt.getErrorCode() == 0x0100) {
 	        smaLogoff();
 	        throw new InvalidPasswordException("Logon failed. Check '"+userGroup+"' Password");
 	    }
@@ -101,7 +101,7 @@ public class Inverter extends SmaConnection {
 	 * Use this after your done getting data but before shutting down the main connection.
 	 * @throws IOException 
 	 */
-	public void Logoff() throws IOException	{
+	public void logoff() throws IOException	{
 		smaLogoff();
 	}
 	
@@ -112,7 +112,7 @@ public class Inverter extends SmaConnection {
 	 * @return Returns 0 if everything went ok.
 	 * @throws IOException 
 	 */
-	public void GetInverterData(InverterDataType invDataType) throws IOException {
+	public void getInverterData(InverterDataType invDataType) throws IOException {
 		LOGGER.info("getInverterData({})", invDataType);
 
 	    int recordsize = 0;
@@ -254,7 +254,7 @@ public class Inverter extends SmaConnection {
 	/**
 	 * Calculates the missing DC Spot Values
 	 */
-	public void CalcMissingSpot()
+	public void calcMissingSpot()
 	{
 		if (Data.Pdc1 == 0) {
 			Data.Pdc1 = (Data.Idc1 * Data.Udc1) / 100000;

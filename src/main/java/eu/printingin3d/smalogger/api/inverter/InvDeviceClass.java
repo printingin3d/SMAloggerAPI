@@ -46,8 +46,7 @@ public enum InvDeviceClass
         return null;
     }
     
-    private InvDeviceClass(int value)
-    {
+    private InvDeviceClass(int value) {
     	this.value = value;
     }
 }

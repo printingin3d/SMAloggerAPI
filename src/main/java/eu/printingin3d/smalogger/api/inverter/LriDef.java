@@ -77,8 +77,7 @@ public enum LriDef
     
     private int value;
     
-    private LriDef(int value)
-    {
+    private LriDef(int value) {
     	this.value = value;
     }
 }
