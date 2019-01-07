@@ -147,7 +147,7 @@ public class Inverter implements Closeable {
 
 	                    if (LOGGER.isTraceEnabled()) {
 	                        LOGGER.debug("<<<====== Content of pcktBuf =======>>>");
-	                        Misc.HexDump(bb.array(), bb.limit(), 10);
+	                        Misc.HexDump(bb.array(), bib - EthPacketHeaderL1.getSize(), 16);
 	                        LOGGER.debug("<<<=================================>>>");
 	                    }
 	                    return bb;
@@ -240,6 +240,9 @@ public class Inverter implements Closeable {
 		
 		while(true) {
 			ByteBuffer packet = getPacket();
+			
+			byte c = packet.get(25);
+			System.out.println("Counter: "+c);
 	        
 			short rcvpcktID = (short) (packet.get(27) & 0x7FFF);
 			if (ethernet.pcktID == rcvpcktID) {
@@ -249,20 +252,11 @@ public class Inverter implements Closeable {
 				boolean rightOne = SUSyID == packet.getShort(15) && Serial == packet.getInt(17);
 				
 				if (rightOne) {
-					packet.position(41);   // the first non header byte
-					
-                    for (int ix = 41; ix < packet.limit() - 4;) {
-                    	packet.position(ix);
-                    	int code = packet.getInt();
-                    	int cls = code & 0xFF;
-                    	
-                        LriDef lri = LriDef.intToEnum((code & 0x00FFFF00));
-                        
-                        request.parseOneSegment(lri, cls, packet);
-                        
-                        ix += lri==null ? 12 : lri.getRecordSize();
-                    }
-                    break;
+					// the first non header byte is at position 41
+					request.parseBody(packet);
+					if (c==0) {
+						break;
+					}
 				}
 				else {
 					LOGGER.info("We received data from the wrong inverter... Expected susyd: {}, received: {}", SUSyID, packet.getShort(15));

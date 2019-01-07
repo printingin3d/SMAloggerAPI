@@ -1,8 +1,9 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
-import java.rmi.UnexpectedException;
+import java.io.IOException;
 import java.util.function.IntFunction;
 
+import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
 public abstract class AbstractInverterOneIntRequest<T> extends AbstractInverterValueRequest<T> {
@@ -17,11 +18,11 @@ public abstract class AbstractInverterOneIntRequest<T> extends AbstractInverterV
 	}
 
 	@Override
-	protected final void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
+	protected final void putValue(LriDef lri, int cls, int value) throws IOException {
 		if (lri == expected) {
 			this.value = value;
 		} else {
-			throw new UnexpectedException("Unexpected value: "+lri);
+			throw new UnexpectedValueException("Unexpected value: "+lri);
 		}
 	}
 

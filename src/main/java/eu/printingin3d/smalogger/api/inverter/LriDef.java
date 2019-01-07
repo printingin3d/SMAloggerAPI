@@ -1,7 +1,9 @@
 package eu.printingin3d.smalogger.api.inverter;
 
-public enum LriDef
-{
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public enum LriDef {
     OperationHealth                 ( 0x00214800, 40),   // *08* Condition (aka INV_STATUS)
 	CoolsysTmpNom					( 0x00237700),	// *40* Operating condition temperatures
     DcMsWatt                        ( 0x00251E00, 28),   // *40* DC power input (aka SPOT_PDC1 / SPOT_PDC2)
@@ -65,12 +67,16 @@ public enum LriDef
 	GridMsPhVphsB2C6100             ( 0x00464C00),
 	GridMsPhVphsC2A6100             ( 0x00464D00);
     
+	private static final Logger LOGGER = LoggerFactory.getLogger(LriDef.class);
+	
     public static LriDef intToEnum(int value) {
     	for (LriDef lri : values()) {
     		if (lri.value == value) {
 				return lri;
 			}
     	}
+    	
+    	LOGGER.error("Unknown response type: "+Integer.toString(value, 16));
 
         return null;
     }

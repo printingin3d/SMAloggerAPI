@@ -1,6 +1,12 @@
 package eu.printingin3d.smalogger.api.test;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.DoubleSummaryStatistics;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +15,7 @@ import eu.printingin3d.smalogger.api.inverter.InvDeviceClass;
 import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.requestvisitor.BatteryChargeStatusRequest;
 import eu.printingin3d.smalogger.api.requestvisitor.BatteryInfoRequest;
+import eu.printingin3d.smalogger.api.requestvisitor.DayDataRequest;
 import eu.printingin3d.smalogger.api.requestvisitor.DeviceStatusRequest;
 import eu.printingin3d.smalogger.api.requestvisitor.EnergyProductionRequest;
 import eu.printingin3d.smalogger.api.requestvisitor.GridRelayStatusRequest;
@@ -125,6 +132,13 @@ public class SBFspotTest {
 			    if (labels.getDevClass() == InvDeviceClass.SolarInverter) {
 					System.out.printf("Current Inverter Time: %s\n", Misc.printDate(freqReq.getDatetime()));
 				}
+			    
+			    Map<LocalDateTime, DoubleSummaryStatistics> dayData = inverter.getInverterData(new DayDataRequest()).stream().collect(
+			    		Collectors.groupingBy(d -> d.getDt().truncatedTo(ChronoUnit.HOURS), 
+			    				Collectors.summarizingDouble(d -> d.getPower())));
+			    for (LocalDateTime dt : new TreeSet<>(dayData.keySet())) {
+			    	System.out.println(dt + ": "+dayData.get(dt).getAverage());
+			    }
 				
 				System.out.println("Shutting down SMA Logger.");
 			}

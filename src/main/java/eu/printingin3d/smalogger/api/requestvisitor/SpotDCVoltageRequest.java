@@ -1,7 +1,8 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
-import java.rmi.UnexpectedException;
+import java.io.IOException;
 
+import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.SpotDCVoltageResponse;
 
@@ -27,7 +28,7 @@ public class SpotDCVoltageRequest extends AbstractInverterValueRequest<SpotDCVol
 	}
 
 	@Override
-	protected void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
+	protected void putValue(LriDef lri, int cls, int value) throws IOException {
 		switch (lri) {
 		case DcMsVol:
 			if (cls==1) {
@@ -35,7 +36,7 @@ public class SpotDCVoltageRequest extends AbstractInverterValueRequest<SpotDCVol
 			} else if (cls==2) {
 				vdc2 = value;
 			} else {
-				throw new UnexpectedException("Unexpected cls value: "+cls);
+				throw new UnexpectedValueException("Unexpected cls value: "+cls);
 			}
 			break;
 		case DcMsAmp:
@@ -44,11 +45,11 @@ public class SpotDCVoltageRequest extends AbstractInverterValueRequest<SpotDCVol
 			} else if (cls==2) {
 				idc2 = value;
 			} else {
-				throw new UnexpectedException("Unexpected cls value: "+cls);
+				throw new UnexpectedValueException("Unexpected cls value: "+cls);
 			}
 			break;
 		default:
-			throw new UnexpectedException("Unexpected value: "+lri);
+			throw new UnexpectedValueException("Unexpected value: "+lri);
 		}
 	}
 

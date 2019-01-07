@@ -1,8 +1,9 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.rmi.UnexpectedException;
 
+import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
 public class SoftwareVersionRequest extends AbstractInverterRequest<String> {
@@ -24,9 +25,9 @@ public class SoftwareVersionRequest extends AbstractInverterRequest<String> {
 	}
 
 	@Override
-	protected void parse(LriDef lri, int cls, ByteBuffer bb) throws UnexpectedException {
+	protected void parse(LriDef lri, int cls, ByteBuffer bb) throws IOException {
 		if (lri != LriDef.NameplatePkgRev) {
-			throw new UnexpectedException("Unexpected value: "+lri);
+			throw new UnexpectedValueException("Unexpected value: "+lri);
 		}
 		
 		bb.position(bb.position() + 16);    // skipping 16 bytes

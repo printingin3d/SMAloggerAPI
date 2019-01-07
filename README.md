@@ -1,14 +1,14 @@
 # SMAloggerAPI
 A Java API to read data from SMA devices, based on the SBFspot project
 
-This is a redesigned version of the <a href="https://github.com/Harrum/SMAlogger">SMAlogger project</a> 
+This is a Java library version of the <a href="https://github.com/Harrum/SMAloggerAPI">SMAloggerAPI project<a>
+which is a redesigned version of the <a href="https://github.com/Harrum/SMAlogger">SMAlogger project</a> 
 which was a direct translation of the <a href="https://sbfspot.codeplex.com/">SBFspot project</a>.
 
-The goal of this project is to transform the original SBFspot program into a more flexible usable API.
+The goal of this project is to make the original project an easy to use Java Maven library.
 
 # Usage
-To use this project you need Java version 8 and a SMA solar inverter, no additionally libraries are needed. 
-Use the argument -v[1-5] to set the level of logging and -d[1-5] to set the level of debug information.
+to be added
 
 Note: Multiple inverters should be supported but I have no way of testing this, so I don't know yet if this 
 functionality works.

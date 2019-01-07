@@ -1,7 +1,8 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
-import java.rmi.UnexpectedException;
+import java.io.IOException;
 
+import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.OperationTimeResponse;
 
@@ -25,7 +26,7 @@ public class OperationTimeRequest extends AbstractInverterValue64Request<Operati
 	}
 
 	@Override
-	protected void putValue(LriDef lri, int cls, long value) throws UnexpectedException {
+	protected void putValue(LriDef lri, int cls, long value) throws IOException {
 		switch (lri) {
 		case MeteringTotOpTms:
 			this.operationTime = value;
@@ -34,7 +35,7 @@ public class OperationTimeRequest extends AbstractInverterValue64Request<Operati
 			this.feedInTime = value;
 			break;
 		default:
-			throw new UnexpectedException("Unexpected value: "+lri);
+			throw new UnexpectedValueException("Unexpected value: "+lri);
 		}
 	}
 
