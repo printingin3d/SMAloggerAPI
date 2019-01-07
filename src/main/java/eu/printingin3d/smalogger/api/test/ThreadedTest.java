@@ -51,7 +51,7 @@ public class ThreadedTest implements Runnable {
 	public void stop() throws IOException {
 		LOGGER.info("logging off inverter...");
 
-		inverter.logoff();
+		inverter.close();
 
 		LOGGER.info("Shutting down SMA Logger.");
 		smaLogger.close();

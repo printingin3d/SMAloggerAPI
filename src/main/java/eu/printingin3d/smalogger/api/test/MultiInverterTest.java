@@ -87,7 +87,7 @@ public class MultiInverterTest {
 	
 			for(Inverter inverter : inverters)
 			{
-				inverter.logoff();
+				inverter.close();
 			}
 			
 			System.out.println("Shutting down SMA Logger.");
