@@ -38,7 +38,7 @@ public class SpotAcVoltageRequest extends AbstractInverterValueRequest<ACVoltage
 	}
 
 	@Override
-	protected void putValue(LriDef lri, int value) throws UnexpectedException {
+	protected void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
 		switch (lri) {
 		case GridMsPhVphsA:
 			this.volt1 = value;

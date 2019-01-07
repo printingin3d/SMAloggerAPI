@@ -24,7 +24,7 @@ public class SoftwareVersionRequest extends AbstractInverterRequest<String> {
 	}
 
 	@Override
-	protected void parse(LriDef lri, ByteBuffer bb) throws UnexpectedException {
+	protected void parse(LriDef lri, int cls, ByteBuffer bb) throws UnexpectedException {
 		if (lri != LriDef.NameplatePkgRev) {
 			throw new UnexpectedException("Unexpected value: "+lri);
 		}

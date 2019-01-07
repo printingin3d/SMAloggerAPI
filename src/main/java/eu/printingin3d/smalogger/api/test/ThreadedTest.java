@@ -6,14 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.printingin3d.smalogger.api.inverter.Inverter;
-import eu.printingin3d.smalogger.api.inverterdata.InverterDataType;
 import eu.printingin3d.smalogger.api.requestvisitor.EnergyProductionRequest;
 import eu.printingin3d.smalogger.api.requestvisitor.SoftwareVersionRequest;
 import eu.printingin3d.smalogger.api.requestvisitor.SpotAcPowerRequest;
 import eu.printingin3d.smalogger.api.requestvisitor.SpotAcVoltageRequest;
+import eu.printingin3d.smalogger.api.requestvisitor.TypeLabelRequest;
 import eu.printingin3d.smalogger.api.response.ACVoltageAmpereResponse;
 import eu.printingin3d.smalogger.api.response.EnergyProductionResponse;
 import eu.printingin3d.smalogger.api.response.ThreePhaseResponse;
+import eu.printingin3d.smalogger.api.response.TypeLabelResponse;
 import eu.printingin3d.smalogger.api.smajava.Misc;
 import eu.printingin3d.smalogger.api.smajava.SmaLogger;
 
@@ -65,11 +66,11 @@ public class ThreadedTest implements Runnable {
 			System.out.printf("Inverter %s logged on... ", inverter.getIP());
 			inverter.logon(PASSWORD);
 
-			inverter.getInverterData(InverterDataType.TypeLabel);
+			TypeLabelResponse labels = inverter.getInverterData(new TypeLabelRequest());
 			System.out.printf("SUSyID: %d - SN: %d\n", inverter.getSUSyID(), inverter.getSerial());
-			System.out.printf("Device Name:      %s\n", inverter.Data.DeviceName);
-			System.out.printf("Device Class:     %s\n", inverter.Data.DeviceClass);
-			System.out.printf("Device Type:      %s\n", inverter.Data.DeviceType);
+	        System.out.printf("Device Name:      %s\n", labels.getDeviceName());
+	        System.out.printf("Device Class:     %s\n", labels.getDeviceClass());
+	        System.out.printf("Device Type:      %s\n", labels.getDeviceType());
 			System.out.printf("Software Version: %s\n", inverter.getInverterData(new SoftwareVersionRequest()));
 			System.out.printf("Serial number:    %d\n", inverter.getSerial());
 			while (counter > 0) {

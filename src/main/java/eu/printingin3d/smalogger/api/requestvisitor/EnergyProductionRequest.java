@@ -25,7 +25,7 @@ public class EnergyProductionRequest extends AbstractInverterValue64Request<Ener
 	}
 
 	@Override
-	protected void putValue(LriDef lri, long value) throws UnexpectedException {
+	protected void putValue(LriDef lri, int cls, long value) throws UnexpectedException {
 		switch (lri) {
 		case MeteringTotWhOut:
 			this.totalEnergy = value;

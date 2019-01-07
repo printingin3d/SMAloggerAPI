@@ -26,7 +26,7 @@ public class BatteryInfoRequest extends AbstractInverterValueRequest<BatteryInfo
 	}
 
 	@Override
-	protected void putValue(LriDef lri, int value) throws UnexpectedException {
+	protected void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
 		switch (lri) {
 	    case BatTmpVal:
 	        this.batteryTemperature = value;

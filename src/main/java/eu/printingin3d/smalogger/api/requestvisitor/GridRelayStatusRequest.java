@@ -5,8 +5,8 @@ import java.rmi.UnexpectedException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.smajava.TagDefs;
 
-public class DeviceStatusRequest extends AbstractInverterAttributeRequest<String> {
-	private int status;
+public class GridRelayStatusRequest extends AbstractInverterAttributeRequest<String> {
+	private int gridStatus;
 
 	@Override
 	public long getCommand() {
@@ -15,26 +15,26 @@ public class DeviceStatusRequest extends AbstractInverterAttributeRequest<String
 
 	@Override
 	public long getFirst() {
-		return 0x00214800;
+		return 0x00416400;
 	}
 
 	@Override
 	public long getLast() {
-		return 0x002148FF;
+		return 0x004164FF;
 	}
 
 	@Override
-	protected final void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
-		if (lri == LriDef.OperationHealth) {
-			this.status = value;
-		} else {
+	protected void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
+		if (lri != LriDef.OperationGriSwStt) {
 			throw new UnexpectedException("Unexpected value: "+lri);
 		}
+		
+		this.gridStatus = value;
 	}
 
 	@Override
-	public final String closeParse() {
-		return TagDefs.getInstance().getDesc(status, "?");
+	public String closeParse() {
+		return TagDefs.getInstance().getDesc(gridStatus, "?");
 	}
-	
+
 }

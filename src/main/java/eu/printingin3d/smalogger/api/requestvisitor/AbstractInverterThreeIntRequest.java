@@ -21,7 +21,7 @@ public abstract class AbstractInverterThreeIntRequest extends AbstractInverterVa
 	}
 
 	@Override
-	protected final void putValue(LriDef lri, int value) throws UnexpectedException {
+	protected final void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
 		if (lri == lri1) {
 			this.value1 = value;
 		} else if (lri == lri2) {

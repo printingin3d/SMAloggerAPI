@@ -17,7 +17,7 @@ public abstract class AbstractInverterOneIntRequest<T> extends AbstractInverterV
 	}
 
 	@Override
-	protected final void putValue(LriDef lri, int value) throws UnexpectedException {
+	protected final void putValue(LriDef lri, int cls, int value) throws UnexpectedException {
 		if (lri == expected) {
 			this.value = value;
 		} else {

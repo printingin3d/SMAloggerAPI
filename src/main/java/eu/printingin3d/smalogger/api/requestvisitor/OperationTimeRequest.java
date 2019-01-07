@@ -25,7 +25,7 @@ public class OperationTimeRequest extends AbstractInverterValue64Request<Operati
 	}
 
 	@Override
-	protected void putValue(LriDef lri, long value) throws UnexpectedException {
+	protected void putValue(LriDef lri, int cls, long value) throws UnexpectedException {
 		switch (lri) {
 		case MeteringTotOpTms:
 			this.operationTime = value;

@@ -15,20 +15,6 @@ import eu.printingin3d.smalogger.api.smajava.Misc;
 
 public class SmaConnection {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SmaConnection.class);
-
-	public class E_SBFSPOT
-	{
-		public final static int E_OK			= 0;
-		public final static int E_NODATA		= -1;	// Bluetooth buffer empty
-		public final static int E_BADARG		= -2;	// Unknown command line argument
-		public final static int E_CHKSUM		= -3;	// Invalid Checksum
-		public final static int E_BUFOVRFLW		= -4;	// Buffer overflow
-		public final static int E_ARCHNODATA	= -5;	// No archived data found for given timespan
-		public final static int E_INIT			= -6;	// Unable to initialize
-		public final static int E_INVPASSW		= -7;	// Invalid password
-		public final static int E_RETRY			= -8;	// Retry the last action
-		public final static int E_EOF			= -9;	// End of data
-	}
 	
 	private final short anySUSyID = (short)0xFFFF;
 	private final long anySerial = 0xFFFFFFFF;
@@ -47,13 +33,11 @@ public class SmaConnection {
 	 * Returns the ip adress of this inverter.
 	 * @return A string containing the IP adress of the inverter.
 	 */
-	public String getIP()
-	{
+	public String getIP() {
 		return ip;
 	}
 
-	protected void initConnection() throws IOException
-	{
+	protected void initConnection() throws IOException {
 		ethernet.writePacketHeader();
 	    ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);
 	    ethernet.writeLong(0x00000200);
@@ -66,8 +50,7 @@ public class SmaConnection {
 	    ethernet.send(ip);
 	}
 	
-	protected void smaLogin(UserGroup userGroup, char[] password) throws IOException
-	{
+	protected void smaLogin(UserGroup userGroup, char[] password) throws IOException {
 		final int MAX_PWLENGTH = 12;
 	    char pw[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -103,8 +86,7 @@ public class SmaConnection {
         ethernet.send(ip);
 	}
 	
-	protected void smaLogoff() throws IOException
-	{
+	public void logoff() throws IOException {
 		LOGGER.info("SMALogoff()");
         
         ethernet.writePacketHeader();
@@ -118,8 +100,7 @@ public class SmaConnection {
         ethernet.send(ip);
 	}
 	
-	protected void requestInverterData(IInverterCommand dataType) throws IOException
-	{
+	protected void requestInverterData(IInverterCommand dataType) throws IOException {
 		ethernet.writePacketHeader();
         ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);
         //Get the command values stored in the enum.
