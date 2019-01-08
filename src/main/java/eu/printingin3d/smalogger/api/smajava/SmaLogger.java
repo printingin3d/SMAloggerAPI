@@ -14,20 +14,28 @@ import eu.printingin3d.smalogger.api.smaconn.Ethernet;
 
 public class SmaLogger implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SmaLogger.class);
-	public static final String VERSION = "0.2 Remaster";
 	
 	private final String IP_Broadcast = "239.12.255.254";
 	private Ethernet ethernet;
+    
+    /**
+     * Creates a new instance of the SMALogger and it's ethernet connection.
+     * @throws IOException 
+     */
+    public SmaLogger(short port, short appSUSyID, int appSerial) throws IOException {
+        //Lets just use the english taglist for now.
+        TagDefs.getInstance().readall("en-US");
+        
+        ethernet = new Ethernet(port, appSUSyID, appSerial);
+    }
 	
 	/**
-	 * Creates a new instance of the SMALogger and it's ethernet connection.
+	 * Creates a new instance of the SMALogger and it's ethernet connection with the 
+	 * default port: 9522, appSUSyID and appSerial
 	 * @throws IOException 
 	 */
 	public SmaLogger() throws IOException {
-	    //Lets just use the english taglist for now.
-	    TagDefs.getInstance().readall("en-US");
-	    
-	    ethernet = new Ethernet((short)9522);
+	    this((short)9522, (short)0x1234, 0x12345678);
 	}
 	
 	/**

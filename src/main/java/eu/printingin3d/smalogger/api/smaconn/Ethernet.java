@@ -25,8 +25,8 @@ public class Ethernet implements AutoCloseable {
 
     public short pcktID = 1;
 
-    private short AppSUSyID;
-    private int AppSerial;
+    private final short appSUSyID;
+    private final int appSerial;
 
     private final DatagramSocket sock;
     private final short port;
@@ -40,15 +40,18 @@ public class Ethernet implements AutoCloseable {
      *                         there is an error in the underlying protocol, such as
      *                         an UDP error.
      */
-    public Ethernet(short port) throws SocketException {
+    public Ethernet(short port, short appSUSyID, int appSerial) throws SocketException {
         LOGGER.info("Initialising Socket...");
+        this.port = port;
+        this.appSUSyID = appSUSyID;
+        this.appSerial = appSerial;
+        
         sock = new DatagramSocket();
-
+        
         buf = ByteBuffer.allocate(maxpcktBufsize);
         buf.order(ByteOrder.LITTLE_ENDIAN);
 
         // set up parameters for UDP
-        this.port = port;
         sock.setBroadcast(true);
     }
 
@@ -168,8 +171,8 @@ public class Ethernet implements AutoCloseable {
         writeShort(dstSUSyID);
         writeInt(dstSerial);
         writeShort(ctrl2);
-        writeShort(AppSUSyID);
-        writeInt(AppSerial);
+        writeShort(appSUSyID);
+        writeInt(appSerial);
         writeShort(ctrl2);
         writeShort((short) 0);
         writeShort((short) 0);
