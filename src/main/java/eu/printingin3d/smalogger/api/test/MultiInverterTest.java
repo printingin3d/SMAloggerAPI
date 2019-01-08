@@ -1,7 +1,6 @@
 package eu.printingin3d.smalogger.api.test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -29,14 +28,12 @@ public final class MultiInverterTest {
     private MultiInverterTest() {}
 
     public static void main(String[] args) throws IOException {
-        List<Inverter> inverters = new ArrayList<>();
-
         LOGGER.info("Initializing SMA Logger");
         try (SmaLogger smaLogger = new SmaLogger()) {
             LOGGER.info("SMA Logger succesfully initialized");
 
             // Network detection
-            inverters = smaLogger.detectDevices();
+            List<Inverter> inverters = smaLogger.detectDevices();
 
             if (!inverters.isEmpty()) {
                 LOGGER.info("Found {} inverter(s)...", inverters.size());

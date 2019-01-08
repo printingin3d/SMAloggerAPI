@@ -8,7 +8,6 @@ public class EthPacket {
     private final short packetID; // Count Up
 
     public EthPacket(ByteBuffer bb) {
-        bb.get();
         bb.position(bb.position() + EthPacketHeaderL2.getSize() + EthEndpoint.getSize());
 
         source = new EthEndpoint(bb);

@@ -14,7 +14,7 @@ public abstract class AbstractInverterRequest<T> implements IInverterCommand {
 
     public void parseBody(ByteBuffer bb) throws IOException {
         // the first non header byte is at position 41
-        for (int ix = 41; ix < bb.limit() - 4;) {
+        for (int ix = 40; ix < bb.limit() - 4;) {
             bb.position(ix);
             int code = bb.getInt();
             int cls = code & 0xFF;

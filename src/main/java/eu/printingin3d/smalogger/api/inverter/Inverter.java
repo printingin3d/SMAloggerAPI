@@ -141,11 +141,11 @@ public class Inverter implements Closeable {
                     }
 
                     if (pkHdr.getPcktHdrL2().getMagicNumber() == Ethernet.ETH_L2SIGNATURE) {
-                        ByteBuffer bb = ByteBuffer.allocate(bib - EthPacketHeaderL1.getSize() + 1);
+                        ByteBuffer bb = ByteBuffer.allocate(bib - EthPacketHeaderL1.getSize());
                         bb.order(ByteOrder.LITTLE_ENDIAN);
                         // Dummy byte to align with BTH (7E)
                         // We need last 6 bytes of ethPacketHeader too
-                        System.arraycopy(commBuf, EthPacketHeaderL1.getSize(), bb.array(), 1,
+                        System.arraycopy(commBuf, EthPacketHeaderL1.getSize(), bb.array(), 0,
                                 bib - EthPacketHeaderL1.getSize());
 
                         if (LOGGER.isTraceEnabled()) {
@@ -243,16 +243,16 @@ public class Inverter implements Closeable {
         while (true) {
             ByteBuffer packet = getPacket();
 
-            byte c = packet.get(25);
+            byte c = packet.get(24);
             System.out.println("Counter: " + c);
 
-            short rcvpcktID = (short) (packet.get(27) & 0x7FFF);
+            short rcvpcktID = (short) (packet.get(26) & 0x7FFF);
             if (ethernet.getPcktID() == rcvpcktID) {
                 // Check if we received the package from the right inverter, not sure if
                 // this works with multiple inverters.
                 // We do this by checking if the susyd and serial is equal to this inverter
                 // object's susyd and serial.
-                boolean rightOne = sUSyID == packet.getShort(15) && serial == packet.getInt(17);
+                boolean rightOne = sUSyID == packet.getShort(14) && serial == packet.getInt(16);
 
                 if (rightOne) {
                     // the first non header byte is at position 41
