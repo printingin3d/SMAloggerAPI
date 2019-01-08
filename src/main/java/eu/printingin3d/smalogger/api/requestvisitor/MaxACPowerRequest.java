@@ -9,17 +9,17 @@ public class MaxACPowerRequest extends AbstractInverterThreeIntRequest {
 	}
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x51000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00411E00;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x004120FF;
 	}
 }

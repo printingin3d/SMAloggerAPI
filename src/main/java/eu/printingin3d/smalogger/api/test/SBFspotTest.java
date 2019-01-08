@@ -53,9 +53,8 @@ public class SBFspotTest {
 	public static void main(String[] args) throws IOException 
 	{
 		final String PASSWORD = "0000";	//Default password
+		LOGGER.info("Initializing SMA Logger");
 		try (SmaLogger smaLogger = new SmaLogger()) {
-			LOGGER.info("Initializing SMA Logger");
-			smaLogger.initialize();
 			LOGGER.info("SMA Logger succesfully initialized");
 			
 			//Manual creation

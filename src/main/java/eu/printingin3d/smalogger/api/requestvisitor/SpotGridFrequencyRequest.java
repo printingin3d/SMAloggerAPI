@@ -9,17 +9,17 @@ public class SpotGridFrequencyRequest extends AbstractInverterOneIntRequest<Doub
 	}
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x51000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00465700;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x004657FF;
 	}
 

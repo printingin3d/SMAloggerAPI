@@ -13,26 +13,26 @@ import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.DayDataItem;
 
 public class DayDataRequest extends AbstractInverterRequest<List<DayDataItem>> {
-	private final long startTime;
+	private final int startTime;
 	
 	private final List<DayDataItem> items = new ArrayList<>();
 
 	public DayDataRequest() {
-		this.startTime = System.currentTimeMillis()/1000L - 86400 - 300;
+		this.startTime = (int)(System.currentTimeMillis()/1000L) - 86400 - 300;
 	}
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x70000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return startTime;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return startTime + 86400;
 	}
 

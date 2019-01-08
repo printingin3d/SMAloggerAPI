@@ -24,7 +24,7 @@ public class Inverter implements Closeable {
 	
 	private static final int COMMBUFSIZE = 1024;
 	private final short anySUSyID = (short)0xFFFF;
-	private final long anySerial = 0xFFFFFFFF;
+	private final int anySerial = 0xFFFFFFFF;
 	
 	private short SUSyID;
 	private long Serial;
@@ -48,10 +48,10 @@ public class Inverter implements Closeable {
 	private void initConnection() throws IOException {
 		ethernet.writePacketHeader();
 	    ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);
-	    ethernet.writeLong(0x00000200);
-	    ethernet.writeLong(0);
-	    ethernet.writeLong(0);
-	    ethernet.writeLong(0);
+	    ethernet.writeInt(0x00000200);
+	    ethernet.writeInt(0);
+	    ethernet.writeInt(0);
+	    ethernet.writeInt(0);
 	    ethernet.writePacketLength();
         
 	    //Send packet to first inverter
@@ -76,14 +76,14 @@ public class Inverter implements Closeable {
 		}
 
 	    //I believe the inverter times is using seconds instead of milliseconds.
-        long now = System.currentTimeMillis() / 1000l;
+        int now = (int)(System.currentTimeMillis() / 1000);
         ethernet.writePacketHeader();
         ethernet.writePacket((char)0x0E, (char)0xA0, (short)0x0100, anySUSyID, anySerial);
-        ethernet.writeLong(0xFFFD040C);
-        ethernet.writeLong(userGroup.getValue());
-        ethernet.writeLong(0x00000384);
-        ethernet.writeLong(now);
-        ethernet.writeLong(0);
+        ethernet.writeInt(0xFFFD040C);
+        ethernet.writeInt(userGroup.getValue());
+        ethernet.writeInt(0x00000384);
+        ethernet.writeInt(now);
+        ethernet.writeInt(0);
         ethernet.writeArray(pw);
         ethernet.writePacketTrailer();
         ethernet.writePacketLength();
@@ -97,8 +97,8 @@ public class Inverter implements Closeable {
         
         ethernet.writePacketHeader();
         ethernet.writePacket((char)0x08, (char)0xA0, (short)0x0300, anySUSyID, anySerial);
-        ethernet.writeLong(0xFFFD010E);
-        ethernet.writeLong(0xFFFFFFFF);
+        ethernet.writeInt(0xFFFD010E);
+        ethernet.writeInt(0xFFFFFFFF);
         ethernet.writePacketTrailer();
         ethernet.writePacketLength();
 
@@ -109,9 +109,9 @@ public class Inverter implements Closeable {
 		ethernet.writePacketHeader();
         ethernet.writePacket((char)0x09, (char)0xA0, (short)0, anySUSyID, anySerial);
         //Get the command values stored in the enum.
-        ethernet.writeLong(dataType.getCommand());
-        ethernet.writeLong(dataType.getFirst());
-        ethernet.writeLong(dataType.getLast());
+        ethernet.writeInt(dataType.getCommand());
+        ethernet.writeInt(dataType.getFirst());
+        ethernet.writeInt(dataType.getLast());
         ethernet.writePacketTrailer();
         ethernet.writePacketLength();
         

@@ -10,17 +10,17 @@ public class SoftwareVersionRequest extends AbstractInverterRequest<String> {
 	private String version;     // format: "03.01.05.R"
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x58000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00823400;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x008234FF;
 	}
 

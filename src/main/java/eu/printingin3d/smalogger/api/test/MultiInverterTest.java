@@ -30,9 +30,8 @@ public class MultiInverterTest {
 		final String PASSWORD = "0000";	//Default password
 		List<Inverter> inverters = new ArrayList<>();
 		
+		LOGGER.info("Initializing SMA Logger");
 		try (SmaLogger smaLogger = new SmaLogger()) {
-			LOGGER.info("Initializing SMA Logger");
-			smaLogger.initialize();
 			LOGGER.info("SMA Logger succesfully initialized");
 			
 			//Network detection

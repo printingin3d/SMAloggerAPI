@@ -11,17 +11,17 @@ public class OperationTimeRequest extends AbstractInverterValue64Request<Operati
 	private long feedInTime;
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x54000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00462E00;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x00462FFF;
 	}
 

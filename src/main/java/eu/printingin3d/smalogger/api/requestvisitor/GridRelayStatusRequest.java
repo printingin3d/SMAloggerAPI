@@ -10,17 +10,17 @@ public class GridRelayStatusRequest extends AbstractInverterAttributeRequest<Str
 	private int gridStatus;
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x51800200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00416400;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x004164FF;
 	}
 

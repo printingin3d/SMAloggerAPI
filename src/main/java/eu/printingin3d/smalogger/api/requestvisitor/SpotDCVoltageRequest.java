@@ -13,17 +13,17 @@ public class SpotDCVoltageRequest extends AbstractInverterValueRequest<SpotDCVol
 	private int idc2;
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x53800200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00451F00;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x004521FF;
 	}
 

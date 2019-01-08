@@ -34,10 +34,8 @@ public class ThreadedTest implements Runnable {
 	private Inverter inverter;
 
 	public void initialize(String[] args) throws IOException {
-		smaLogger = new SmaLogger();
-
 		LOGGER.info("Initializing SMA Logger");
-		smaLogger.initialize();
+		smaLogger = new SmaLogger();
 		LOGGER.info("SMA Logger succesfully initialized");
 	}
 

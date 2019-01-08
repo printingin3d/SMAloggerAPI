@@ -17,17 +17,17 @@ public class SpotAcVoltageRequest extends AbstractInverterValueRequest<ACVoltage
 	private int amp3;
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x51000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00464800;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x004655FF;
 	}
 

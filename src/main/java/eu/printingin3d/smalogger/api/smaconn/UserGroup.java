@@ -1,13 +1,13 @@
 package eu.printingin3d.smalogger.api.smaconn;
 
 public enum UserGroup {
-	USER(0x07L, (char)0x88),
-	INSTALLER(0x0AL, (char)0xBB);
+	USER(0x07, (char)0x88),
+	INSTALLER(0x0A, (char)0xBB);
 
-	private final long value;
+	private final int value;
 	private final char encChar;
 	
-	UserGroup(long value, char encChar) {
+	UserGroup(int value, char encChar) {
 		this.value = value;
 		this.encChar = encChar;
 	}
@@ -16,7 +16,7 @@ public enum UserGroup {
 		return encChar;
 	}
 
-	public long getValue() {
+	public int getValue() {
 		return value;
 	}
 

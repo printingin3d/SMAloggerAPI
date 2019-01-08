@@ -21,23 +21,13 @@ public class SmaLogger implements Closeable {
 	
 	/**
 	 * Creates a new instance of the SMALogger and it's ethernet connection.
-	 */
-	public SmaLogger() {
-		ethernet = new Ethernet();
-	}
-	
-	/**
-	 * Initializes the SMALogger, also intializes and creates the ethernet
-	 * connection.
-	 * @return Returns 0 if everything went right.
 	 * @throws IOException 
 	 */
-	public void initialize() throws IOException {
+	public SmaLogger() throws IOException {
 	    //Lets just use the english taglist for now.
 	    TagDefs.getInstance().readall("en-US");
 	    
-		//So the port was hardcoded in the config so why not hardcode it here, for now...
-		ethernet.connect((short)9522);
+	    ethernet = new Ethernet((short)9522);
 	}
 	
 	/**
@@ -58,7 +48,7 @@ public class SmaLogger implements Closeable {
 	 * @throws IOException 
 	 */
 	public List<Inverter> detectDevices() throws IOException {
-		List<Inverter> inverters = new ArrayList<Inverter>();
+		List<Inverter> inverters = new ArrayList<>();
 		boolean foundOne = false;
 		
 		// Start with UDP broadcast to check for SMA devices on the LAN
@@ -114,11 +104,11 @@ public class SmaLogger implements Closeable {
 		//Clear the buffer and set packet position to 0.
 		ethernet.clearBuffer();
 		
-    	ethernet.writeLong(0x00414D53);  //Start of SMA header
-    	ethernet.writeLong(0xA0020400);  //Unknown
-    	ethernet.writeLong(0xFFFFFFFF);  //Unknown
-    	ethernet.writeLong(0x20000000);  //Unknown
-    	ethernet.writeLong(0x00000000);  //Unknown
+    	ethernet.writeInt(0x00414D53);  //Start of SMA header
+    	ethernet.writeInt(0xA0020400);  //Unknown
+    	ethernet.writeInt(0xFFFFFFFF);  //Unknown
+    	ethernet.writeInt(0x20000000);  //Unknown
+    	ethernet.writeInt(0x00000000);  //Unknown
 
     	ethernet.send(IP_Broadcast);
 	}

@@ -10,17 +10,17 @@ public class DeviceStatusRequest extends AbstractInverterAttributeRequest<String
 	private int status;
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x51800200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00214800;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x002148FF;
 	}
 

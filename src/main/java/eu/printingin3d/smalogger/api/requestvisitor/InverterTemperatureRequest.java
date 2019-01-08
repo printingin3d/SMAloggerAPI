@@ -9,17 +9,17 @@ public class InverterTemperatureRequest extends AbstractInverterOneIntRequest<Do
 	}
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x52000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00237700;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x002377FF;
 	}
 }

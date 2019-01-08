@@ -11,17 +11,17 @@ public class EnergyProductionRequest extends AbstractInverterValue64Request<Ener
 	private long todayEnergy;
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x54000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00260100;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x002622FF;
 	}
 

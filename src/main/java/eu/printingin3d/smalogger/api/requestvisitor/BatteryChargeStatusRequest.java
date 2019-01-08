@@ -9,17 +9,17 @@ public class BatteryChargeStatusRequest extends AbstractInverterOneIntRequest<In
 	}
 
 	@Override
-	public long getCommand() {
+	public int getCommand() {
 		return 0x51000200;
 	}
 
 	@Override
-	public long getFirst() {
+	public int getFirst() {
 		return 0x00295A00;
 	}
 
 	@Override
-	public long getLast() {
+	public int getLast() {
 		return 0x00295AFF;
 	}
 
