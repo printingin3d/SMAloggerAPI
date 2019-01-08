@@ -23,11 +23,12 @@ import eu.printingin3d.smalogger.api.smajava.SmaLogger;
  * is untested by me as I only have access to one inverter.
  *
  */
-public class MultiInverterTest {
+public final class MultiInverterTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiInverterTest.class);
+    
+    private MultiInverterTest() {}
 
     public static void main(String[] args) throws IOException {
-        final String PASSWORD = "0000"; // Default password
         List<Inverter> inverters = new ArrayList<>();
 
         LOGGER.info("Initializing SMA Logger");
@@ -51,7 +52,7 @@ public class MultiInverterTest {
 
             for (Inverter inverter : inverters) {
                 System.out.printf("Inverter %s logged on... ", inverter.getIP());
-                inverter.logon(PASSWORD);
+                inverter.logon();
             }
 
             System.out.println("Getting some data...");

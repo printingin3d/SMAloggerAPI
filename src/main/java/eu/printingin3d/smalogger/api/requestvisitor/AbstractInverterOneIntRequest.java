@@ -7,28 +7,28 @@ import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
 public abstract class AbstractInverterOneIntRequest<T> extends AbstractInverterValueRequest<T> {
-	private final LriDef expected;
-	private final IntFunction<T> converter;
-	
-	private int value;
+    private final LriDef expected;
+    private final IntFunction<T> converter;
 
-	public AbstractInverterOneIntRequest(LriDef expected, IntFunction<T> converter) {
-		this.expected = expected;
-		this.converter = converter;
-	}
+    private int value;
 
-	@Override
-	protected final void putValue(LriDef lri, int cls, int value) throws IOException {
-		if (lri == expected) {
-			this.value = value;
-		} else {
-			throw new UnexpectedValueException("Unexpected value: "+lri);
-		}
-	}
+    public AbstractInverterOneIntRequest(LriDef expected, IntFunction<T> converter) {
+        this.expected = expected;
+        this.converter = converter;
+    }
 
-	@Override
-	public final T closeParse() {
-		return converter.apply(value);
-	}
+    @Override
+    protected final void putValue(LriDef lri, int cls, int value) throws IOException {
+        if (lri == expected) {
+            this.value = value;
+        } else {
+            throw new UnexpectedValueException("Unexpected value: " + lri);
+        }
+    }
+
+    @Override
+    public final T closeParse() {
+        return converter.apply(value);
+    }
 
 }

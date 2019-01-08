@@ -7,27 +7,27 @@ public class TypeLabelResponse {
     private final String deviceClass;
     private final InvDeviceClass devClass;
     private final String deviceName;
-    
-	public TypeLabelResponse(String deviceType, String deviceClass, InvDeviceClass devClass, String deviceName) {
-		this.deviceType = deviceType;
-		this.deviceClass = deviceClass;
-		this.devClass = devClass;
-		this.deviceName = deviceName;
-	}
 
-	public String getDeviceType() {
-		return deviceType;
-	}
+    public TypeLabelResponse(String deviceType, String deviceClass, InvDeviceClass devClass, String deviceName) {
+        this.deviceType = deviceType;
+        this.deviceClass = deviceClass;
+        this.devClass = devClass;
+        this.deviceName = deviceName;
+    }
 
-	public String getDeviceClass() {
-		return deviceClass;
-	}
+    public String getDeviceType() {
+        return deviceType;
+    }
 
-	public InvDeviceClass getDevClass() {
-		return devClass;
-	}
+    public String getDeviceClass() {
+        return deviceClass;
+    }
 
-	public String getDeviceName() {
-		return deviceName;
-	}
+    public InvDeviceClass getDevClass() {
+        return devClass;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
 }

@@ -16,21 +16,21 @@ import eu.printingin3d.smalogger.api.inverter.Inverter;
 import eu.printingin3d.smalogger.api.smajava.Misc;
 
 public class Ethernet implements AutoCloseable {
+    public static final int ETH_L2SIGNATURE = 0x65601000;
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(Ethernet.class);
 
     private final int maxpcktBufsize = 520;
-    public final int ETH_L2SIGNATURE = 0x65601000;
 
     private final ByteBuffer buf;
-
-    public short pcktID = 1;
-
     private final short appSUSyID;
     private final int appSerial;
-
+    
     private final DatagramSocket sock;
     private final short port;
 
+    private short pcktID = 1;
+    
     /***
      * Connects the socket to the port
      * 
@@ -45,9 +45,9 @@ public class Ethernet implements AutoCloseable {
         this.port = port;
         this.appSUSyID = appSUSyID;
         this.appSerial = appSerial;
-        
+
         sock = new DatagramSocket();
-        
+
         buf = ByteBuffer.allocate(maxpcktBufsize);
         buf.order(ByteOrder.LITTLE_ENDIAN);
 
@@ -66,6 +66,10 @@ public class Ethernet implements AutoCloseable {
         return new Inverter(ip, this);
     }
 
+    public short getPcktID() {
+        return pcktID;
+    }
+
     /**
      * Disconnects and closes the socket connection.
      */
@@ -82,32 +86,32 @@ public class Ethernet implements AutoCloseable {
      * @return Number of bytes read.
      */
     public int read(byte[] buf) throws IOException {
-        int bytes_read = 0;
+        int bytesRead = 0;
         short timeout = 5; // 5 seconds
 
         while (true) {
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
             sock.setSoTimeout(timeout * 1000);
             sock.receive(recv);
-            bytes_read = recv.getLength();
+            bytesRead = recv.getLength();
 
-            if (bytes_read > 0) {
-                LOGGER.info("Received {} bytes from IP [{}]", bytes_read, recv.getAddress().getHostAddress());
-                if (bytes_read == 600) {
+            if (bytesRead > 0) {
+                LOGGER.info("Received {} bytes from IP [{}]", bytesRead, recv.getAddress().getHostAddress());
+                if (bytesRead == 600) {
                     LOGGER.info(" ==> packet ignored");
                 }
             } else {
-                LOGGER.warn("recvfrom() returned an error: {}", bytes_read);
+                LOGGER.warn("recvfrom() returned an error: {}", bytesRead);
             }
 
-            if (bytes_read == 600) {
+            if (bytesRead == 600) {
                 timeout--; // decrease timeout if the packet received within the timeout is an energymeter
                            // packet
             } else {
                 break;
             }
         }
-        return bytes_read;
+        return bytesRead;
     }
 
     /***
@@ -119,14 +123,14 @@ public class Ethernet implements AutoCloseable {
      */
     public int send(String toIP) throws IOException {
         if (LOGGER.isTraceEnabled()) {
-            Misc.HexDump(buf.array(), buf.position(), 10);
+            Misc.hexDump(buf.array(), buf.position(), 10);
         }
 
         DatagramPacket p = new DatagramPacket(buf.array(), buf.position(), new InetSocketAddress(toIP, port));
-        int bytes_sent = p.getLength();
+        int bytesSent = p.getLength();
         sock.send(p);
-        LOGGER.info(bytes_sent + " Bytes sent to IP [" + toIP + "]");
-        return bytes_sent;
+        LOGGER.info(bytesSent + " Bytes sent to IP [" + toIP + "]");
+        return bytesSent;
     }
 
     /***
@@ -155,7 +159,7 @@ public class Ethernet implements AutoCloseable {
         buf.put(13, (byte) (dataLength & 0xFF));
     }
 
-    public void writeArray(char bytes[]) {
+    public void writeArray(char[] bytes) {
         for (int i = 0; i < bytes.length; i++) {
             writeByte((byte) bytes[i]);
         }
