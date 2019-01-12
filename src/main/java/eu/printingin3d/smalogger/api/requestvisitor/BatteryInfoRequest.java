@@ -2,6 +2,9 @@ package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.io.IOException;
 
+import eu.printingin3d.physics.Current;
+import eu.printingin3d.physics.Temperature;
+import eu.printingin3d.physics.Voltage;
 import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.BatteryInfoResponse;
@@ -45,6 +48,9 @@ public class BatteryInfoRequest extends AbstractInverterValueRequest<BatteryInfo
 
     @Override
     public BatteryInfoResponse closeParse() {
-        return new BatteryInfoResponse(batteryTemperature * 0.1, batteryVoltage * 0.01, batteryAmpere * 0.001);
+        return new BatteryInfoResponse(
+                Temperature.fromCelsius(batteryTemperature * 0.1), 
+                new Voltage(batteryVoltage * 0.01), 
+                new Current(batteryAmpere * 0.001));
     }
 }

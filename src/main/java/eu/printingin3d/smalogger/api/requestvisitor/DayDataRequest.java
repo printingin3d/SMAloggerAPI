@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import eu.printingin3d.physics.Energy;
+import eu.printingin3d.physics.Power;
+import eu.printingin3d.physics.Time;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.DayDataItem;
 
@@ -42,17 +45,18 @@ public class DayDataRequest extends AbstractInverterRequest<List<DayDataItem>> {
 
     @Override
     public void parseBody(ByteBuffer bb) throws IOException {
+        ZoneOffset offset = OffsetDateTime.now().getOffset();
         // the first non header byte is at position 41
         for (int ix = 40; ix < bb.limit() - 4; ix += 12) {
             bb.position(ix);
-            LocalDateTime dt = LocalDateTime.ofEpochSecond(bb.getInt(), 0, OffsetDateTime.now().getOffset());
-            long value = bb.getLong();
+            LocalDateTime dt = LocalDateTime.ofEpochSecond(bb.getInt(), 0, offset);
+            Energy value = Energy.fromWattHour(bb.getLong());
 
-            double power = 0.0;
+            Power power = new Power(0.0);
             if (!items.isEmpty()) {
                 DayDataItem last = items.get(items.size() - 1);
-                double d = last.getDt().until(dt, ChronoUnit.SECONDS) / 3600.0;
-                power = (value - last.getWh()) / d;
+                Time d = Time.difference(last.getDt(), dt);
+                power = value.substract(last.getWh()).getPower(d);
             }
             items.add(new DayDataItem(dt, value, power));
         }

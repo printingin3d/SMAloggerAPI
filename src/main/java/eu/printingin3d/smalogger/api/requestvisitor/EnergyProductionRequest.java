@@ -2,6 +2,7 @@ package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.io.IOException;
 
+import eu.printingin3d.physics.Energy;
 import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.EnergyProductionResponse;
@@ -41,7 +42,7 @@ public class EnergyProductionRequest extends AbstractInverterValue64Request<Ener
 
     @Override
     public EnergyProductionResponse closeParse() {
-        return new EnergyProductionResponse(totalEnergy, todayEnergy);
+        return new EnergyProductionResponse(Energy.fromWattHour(totalEnergy), Energy.fromWattHour(todayEnergy));
     }
 
 }

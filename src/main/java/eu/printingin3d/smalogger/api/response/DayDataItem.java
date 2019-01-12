@@ -2,12 +2,15 @@ package eu.printingin3d.smalogger.api.response;
 
 import java.time.LocalDateTime;
 
+import eu.printingin3d.physics.Energy;
+import eu.printingin3d.physics.Power;
+
 public class DayDataItem {
     private final LocalDateTime dt;
-    private final long wh; // total energy produced in Wh
-    private final double power; // average energy produced in the last section in W
+    private final Energy wh; // total energy produced in Wh
+    private final Power power; // average energy produced in the last section in W
 
-    public DayDataItem(LocalDateTime dt, long wh, double power) {
+    public DayDataItem(LocalDateTime dt, Energy wh, Power power) {
         this.dt = dt;
         this.wh = wh;
         this.power = power;
@@ -17,11 +20,11 @@ public class DayDataItem {
         return dt;
     }
 
-    public long getWh() {
+    public Energy getWh() {
         return wh;
     }
 
-    public double getPower() {
+    public Power getPower() {
         return power;
     }
 

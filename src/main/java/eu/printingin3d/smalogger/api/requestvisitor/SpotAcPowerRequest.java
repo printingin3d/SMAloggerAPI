@@ -1,10 +1,12 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
+import eu.printingin3d.physics.Power;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
-public class SpotAcPowerRequest extends AbstractInverterThreeIntRequest {
+public class SpotAcPowerRequest extends AbstractInverterThreeIntRequest<Power> {
     public SpotAcPowerRequest() {
-        super(LriDef.GridMsWphsA, LriDef.GridMsWphsB, LriDef.GridMsWphsC);
+        super(LriDef.GridMsWphsA, LriDef.GridMsWphsB, LriDef.GridMsWphsC,
+                x -> new Power(x));
     }
 
     @Override

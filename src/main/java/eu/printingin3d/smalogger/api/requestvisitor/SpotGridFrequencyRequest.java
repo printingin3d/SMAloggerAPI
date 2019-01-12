@@ -1,11 +1,12 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
+import eu.printingin3d.physics.Frequency;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
-public class SpotGridFrequencyRequest extends AbstractInverterOneIntRequest<Double> {
+public class SpotGridFrequencyRequest extends AbstractInverterOneIntRequest<Frequency> {
 
     public SpotGridFrequencyRequest() {
-        super(LriDef.GridMsHz, x -> Double.valueOf(x * 0.01));
+        super(LriDef.GridMsHz, x -> new Frequency(x * 0.01));
     }
 
     @Override

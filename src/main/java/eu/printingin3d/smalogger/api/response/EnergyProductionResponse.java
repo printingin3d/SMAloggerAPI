@@ -1,19 +1,21 @@
 package eu.printingin3d.smalogger.api.response;
 
-public class EnergyProductionResponse {
-    private final long totalEnergy;
-    private final long todayEnergy;
+import eu.printingin3d.physics.Energy;
 
-    public EnergyProductionResponse(long totalEnergy, long todayEnergy) {
+public class EnergyProductionResponse {
+    private final Energy totalEnergy;
+    private final Energy todayEnergy;
+
+    public EnergyProductionResponse(Energy totalEnergy, Energy todayEnergy) {
         this.totalEnergy = totalEnergy;
         this.todayEnergy = todayEnergy;
     }
 
-    public long getTotalEnergy() {
+    public Energy getTotalEnergy() {
         return totalEnergy;
     }
 
-    public long getTodayEnergy() {
+    public Energy getTodayEnergy() {
         return todayEnergy;
     }
 }

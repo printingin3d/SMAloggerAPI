@@ -244,8 +244,6 @@ public class Inverter implements Closeable {
             ByteBuffer packet = getPacket();
 
             byte c = packet.get(24);
-            System.out.println("Counter: " + c);
-
             short rcvpcktID = (short) (packet.get(26) & 0x7FFF);
             if (ethernet.getPcktID() == rcvpcktID) {
                 // Check if we received the package from the right inverter, not sure if

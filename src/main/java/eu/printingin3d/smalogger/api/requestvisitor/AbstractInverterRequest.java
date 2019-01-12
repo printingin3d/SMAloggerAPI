@@ -2,13 +2,14 @@ package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.inverterdata.IInverterCommand;
 
 public abstract class AbstractInverterRequest<T> implements IInverterCommand {
-    private Date datetime;
+    private LocalDateTime datetime;
 
     protected abstract void parse(LriDef lri, int cls, ByteBuffer bb) throws IOException;
 
@@ -28,14 +29,14 @@ public abstract class AbstractInverterRequest<T> implements IInverterCommand {
     }
 
     protected void parseOneSegment(LriDef lri, int cls, ByteBuffer bb) throws IOException {
-        this.datetime = new Date(bb.getInt() * 1000L);
+        this.datetime = LocalDateTime.ofEpochSecond(bb.getInt(), 0, OffsetDateTime.now().getOffset());
 
         parse(lri, cls, bb);
     }
 
     public abstract T closeParse();
 
-    public Date getDatetime() {
+    public LocalDateTime getDatetime() {
         return datetime;
     }
 }

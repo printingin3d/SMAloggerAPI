@@ -2,6 +2,7 @@ package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.io.IOException;
 
+import eu.printingin3d.physics.Power;
 import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.SpotDcPowerResponse;
@@ -42,7 +43,7 @@ public class SpotDcPowerRequest extends AbstractInverterValueRequest<SpotDcPower
 
     @Override
     public SpotDcPowerResponse closeParse() {
-        return new SpotDcPowerResponse(pdc1, pdc2);
+        return new SpotDcPowerResponse(new Power(pdc1), new Power(pdc2));
     }
 
 }

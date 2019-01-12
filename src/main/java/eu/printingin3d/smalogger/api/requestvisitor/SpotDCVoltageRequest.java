@@ -2,6 +2,8 @@ package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.io.IOException;
 
+import eu.printingin3d.physics.Current;
+import eu.printingin3d.physics.Voltage;
 import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.SpotDCVoltageResponse;
@@ -55,7 +57,8 @@ public class SpotDCVoltageRequest extends AbstractInverterValueRequest<SpotDCVol
 
     @Override
     public SpotDCVoltageResponse closeParse() {
-        return new SpotDCVoltageResponse(vdc1 * 0.01, vdc2 * 0.01, idc1 * 0.001, idc2 * 0.001);
+        return new SpotDCVoltageResponse(new Voltage(vdc1 * 0.01), new Voltage(vdc2 * 0.01), 
+                new Current(idc1 * 0.001), new Current(idc2 * 0.001));
     }
 
 }

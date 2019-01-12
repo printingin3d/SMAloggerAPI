@@ -1,25 +1,29 @@
 package eu.printingin3d.smalogger.api.response;
 
-public class BatteryInfoResponse {
-    private final double batteryTemperature;
-    private final double batteryVoltage;
-    private final double batteryAmpere;
+import eu.printingin3d.physics.Current;
+import eu.printingin3d.physics.Temperature;
+import eu.printingin3d.physics.Voltage;
 
-    public BatteryInfoResponse(double batteryTemperature, double batteryVoltage, double batteryAmpere) {
+public class BatteryInfoResponse {
+    private final Temperature batteryTemperature;
+    private final Voltage batteryVoltage;
+    private final Current batteryAmpere;
+
+    public BatteryInfoResponse(Temperature batteryTemperature, Voltage batteryVoltage, Current batteryAmpere) {
         this.batteryTemperature = batteryTemperature;
         this.batteryVoltage = batteryVoltage;
         this.batteryAmpere = batteryAmpere;
     }
 
-    public double getBatteryTemperature() {
+    public Temperature getBatteryTemperature() {
         return batteryTemperature;
     }
 
-    public double getBatteryVoltage() {
+    public Voltage getBatteryVoltage() {
         return batteryVoltage;
     }
 
-    public double getBatteryAmpere() {
+    public Current getBatteryAmpere() {
         return batteryAmpere;
     }
 }

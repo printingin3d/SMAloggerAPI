@@ -1,19 +1,21 @@
 package eu.printingin3d.smalogger.api.response;
 
-public class OperationTimeResponse {
-    private final long operationTime;
-    private final long feedInTime;
+import eu.printingin3d.physics.Time;
 
-    public OperationTimeResponse(long operationTime, long feedInTime) {
+public class OperationTimeResponse {
+    private final Time operationTime;
+    private final Time feedInTime;
+
+    public OperationTimeResponse(Time operationTime, Time feedInTime) {
         this.operationTime = operationTime;
         this.feedInTime = feedInTime;
     }
 
-    public long getOperationTime() {
+    public Time getOperationTime() {
         return operationTime;
     }
 
-    public long getFeedInTime() {
+    public Time getFeedInTime() {
         return feedInTime;
     }
 }

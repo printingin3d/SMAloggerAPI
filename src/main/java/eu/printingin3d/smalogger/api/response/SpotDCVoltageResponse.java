@@ -1,31 +1,34 @@
 package eu.printingin3d.smalogger.api.response;
 
-public class SpotDCVoltageResponse {
-    private final double vdc1;
-    private final double vdc2;
-    private final double idc1;
-    private final double idc2;
+import eu.printingin3d.physics.Current;
+import eu.printingin3d.physics.Voltage;
 
-    public SpotDCVoltageResponse(double vdc1, double vdc2, double idc1, double idc2) {
+public class SpotDCVoltageResponse {
+    private final Voltage vdc1;
+    private final Voltage vdc2;
+    private final Current idc1;
+    private final Current idc2;
+
+    public SpotDCVoltageResponse(Voltage vdc1, Voltage vdc2, Current idc1, Current idc2) {
         this.vdc1 = vdc1;
         this.vdc2 = vdc2;
         this.idc1 = idc1;
         this.idc2 = idc2;
     }
 
-    public double getVdc1() {
+    public Voltage getVdc1() {
         return vdc1;
     }
 
-    public double getVdc2() {
+    public Voltage getVdc2() {
         return vdc2;
     }
 
-    public double getIdc1() {
+    public Current getIdc1() {
         return idc1;
     }
 
-    public double getIdc2() {
+    public Current getIdc2() {
         return idc2;
     }
 }
