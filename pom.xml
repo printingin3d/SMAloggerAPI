@@ -6,6 +6,9 @@
 	<artifactId>SMAloggerAPI</artifactId>
 	<version>0.3.0.0</version>
 	<packaging>jar</packaging>
+	<name>SMAloggerAPI</name>
+	<description>A Java API to read data from SMA devices, based on the SBFspot project.</description>
+	<url>https://github.com/printingin3d/SMAloggerAPI</url>
 
 	<properties>
 		<jmockit.version>1.30</jmockit.version>
@@ -14,7 +17,41 @@
 		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
+   	<licenses>
+		<license>
+			<name>Creative Commons - Attribution-NonCommercial-ShareAlike 3.0 Unported</name>
+			<url>https://creativecommons.org/licenses/by-nc-sa/3.0/</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git@github.com:printingin3d/SMAloggerAPI.git</connection>
+		<developerConnection>scm:git:git@github.com:printingin3d/SMAloggerAPI.git</developerConnection>
+		<url>git@github.com:printingin3d/SMAloggerAPI.git</url>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+    <developers>
+		<developer>
+			<name>Ivan Suller</name>
+			<email>ivivan@printingin3d.eu</email>
+			<organization>Printing In 3D</organization>
+			<organizationUrl>https://www.printingin3d.eu</organizationUrl>
+		</developer>
+	</developers>
+    
 	<build>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -123,4 +160,111 @@
 			<version>0.1.0.0</version>
 		</dependency>
 	</dependencies>
+
+   	<profiles>
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>local-release</id>
+			<activation>
+				<property>
+					<name>release</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.3</version>
+						<configuration>
+							<jarOutputDirectory>target</jarOutputDirectory>
+							<destDir>target/javadoc</destDir>
+							<encoding>UTF-8</encoding>
+							<bottom>Copyright &#169; 2014&#x2013;{currentYear}, Printing in 3D. All rights reserved.</bottom>
+							<show>protected</show>
+							<quiet>true</quiet>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>maven-release</id>
+			<activation>
+				<property>
+					<name>release</name>
+					<value>maven</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<configuration>
+							<javadoc>${project.artifactId}-${project.version}-javadoc.jar</javadoc>
+						</configuration>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.3</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
