@@ -61,12 +61,12 @@ public class Inverter implements Closeable {
         ethernet.send(ip);
     }
 
-    private void smaLogin(UserGroup userGroup) throws IOException {
+    private void smaLogin(UserGroup userGroup, String passwd) throws IOException {
         char[] pw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         LOGGER.info("smaLogin()");
 
-        char[] password = userGroup.getPassword().toCharArray();
+        char[] password = passwd.toCharArray();
         char encChar = userGroup.getEncChar();
         // Encode password
         int idx;
@@ -184,14 +184,14 @@ public class Inverter implements Closeable {
     /**
      * Sends a logon request to the inverter which creates a connection. Use this
      * before getting data from the inverter but after the main connection was
-     * created. NOTE: Only able to log on as a user now!
+     * created. NOTE: Only able to log on as a user now and only with the default 
+     * password!
      * 
-     * @param password The password used to login to the inverter.
      * @return Returns 0 if everything went ok.
      * @throws IOException
      */
     public void logon() throws IOException {
-        logon(UserGroup.USER);
+        logon(UserGroup.USER, UserGroup.USER.getPassword());
     }
 
     /**
@@ -200,11 +200,11 @@ public class Inverter implements Closeable {
      * created.
      * 
      * @param userGroup The usergroup: (USER or INSTALLER)
-     * @param password  The password used to login to the inverter.
+     * @param passwd  The password used to login to the inverter.
      * @return Returns 0 if everything went ok.
      * @throws IOException
      */
-    private void logon(UserGroup userGroup) throws IOException {
+    public void logon(UserGroup userGroup, String passwd) throws IOException {
         // First initialize the connection.
         initConnection();
         ByteBuffer packet = getPacket();
@@ -212,7 +212,7 @@ public class Inverter implements Closeable {
         sUSyID = pckt2.getSource().getSUSyID();
         serial = pckt2.getSource().getSerial();
         // Then login.
-        smaLogin(userGroup);
+        smaLogin(userGroup, passwd);
         ByteBuffer packet2 = getPacket();
         EthPacket pckt = new EthPacket(packet2);
         if (ethernet.getPcktID() != ((pckt.getPacketID()) & 0x7FFF)) { // InValid Packet ID

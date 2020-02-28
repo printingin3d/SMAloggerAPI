@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.printingin3d.smalogger</groupId>
 	<artifactId>SMAloggerAPI</artifactId>
-	<version>0.3.0.0</version>
+	<version>0.3.1.0</version>
 	<packaging>jar</packaging>
 	<name>SMAloggerAPI</name>
 	<description>A Java API to read data from SMA devices, based on the SBFspot project.</description>
