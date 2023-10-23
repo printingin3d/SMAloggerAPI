@@ -7,7 +7,7 @@ public class MaxACPowerRequest extends AbstractInverterThreeIntRequest<Power> {
 
     public MaxACPowerRequest() {
         super(LriDef.OperationHealthSttOk, LriDef.OperationHealthSttWrn, LriDef.OperationHealthSttAlm,
-                x -> new Power(x));
+                x -> ConversionConstants.convertPower(x));
     }
 
     @Override

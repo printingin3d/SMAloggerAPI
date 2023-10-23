@@ -6,7 +6,7 @@ import eu.printingin3d.smalogger.api.inverter.LriDef;
 public class InverterTemperatureRequest extends AbstractInverterOneIntRequest<Temperature> {
 
     public InverterTemperatureRequest() {
-        super(LriDef.CoolsysTmpNom, x -> Temperature.fromCelsius(x * 0.01));
+        super(LriDef.CoolsysTmpNom, ConversionConstants::convertTemp);
     }
 
     @Override

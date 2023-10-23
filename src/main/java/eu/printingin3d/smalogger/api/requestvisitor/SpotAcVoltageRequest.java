@@ -2,8 +2,6 @@ package eu.printingin3d.smalogger.api.requestvisitor;
 
 import java.io.IOException;
 
-import eu.printingin3d.physics.Current;
-import eu.printingin3d.physics.Voltage;
 import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.ACVoltageAmpereResponse;
@@ -36,8 +34,10 @@ public class SpotAcVoltageRequest extends AbstractInverterValueRequest<ACVoltage
     @Override
     public ACVoltageAmpereResponse closeParse() {
         return new ACVoltageAmpereResponse(
-                new ThreePhaseResponse<Voltage>(volt1, volt2, volt3, x -> new Voltage(x * 0.01)),
-                new ThreePhaseResponse<Current>(amp1, amp2, amp3, x -> new Current(x * 0.001)));
+                new ThreePhaseResponse<>(volt1, volt2, volt3, 
+                        ConversionConstants::convertVoltage),
+                new ThreePhaseResponse<>(amp1, amp2, amp3, 
+                        ConversionConstants::convertCurrent));
     }
 
     @Override

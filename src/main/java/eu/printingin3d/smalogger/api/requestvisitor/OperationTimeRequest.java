@@ -1,8 +1,9 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
+import static eu.printingin3d.smalogger.api.requestvisitor.ConversionConstants.convertTime;
+
 import java.io.IOException;
 
-import eu.printingin3d.physics.Time;
 import eu.printingin3d.smalogger.api.exception.UnexpectedValueException;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 import eu.printingin3d.smalogger.api.response.OperationTimeResponse;
@@ -42,7 +43,7 @@ public class OperationTimeRequest extends AbstractInverterValue64Request<Operati
 
     @Override
     public OperationTimeResponse closeParse() {
-        return new OperationTimeResponse(Time.ofSecond(operationTime), Time.ofSecond(feedInTime));
+        return new OperationTimeResponse(convertTime(operationTime), convertTime(feedInTime));
     }
 
 }

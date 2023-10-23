@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.DoubleSummaryStatistics;
@@ -50,6 +51,7 @@ import eu.printingin3d.smalogger.api.response.SpotDCVoltageResponse;
 import eu.printingin3d.smalogger.api.response.SpotDcPowerResponse;
 import eu.printingin3d.smalogger.api.response.ThreePhaseResponse;
 import eu.printingin3d.smalogger.api.response.TypeLabelResponse;
+import eu.printingin3d.smalogger.api.smaconn.UserGroup;
 import eu.printingin3d.smalogger.api.smajava.SmaLogger;
 
 /**
@@ -76,7 +78,7 @@ public class SBFspotTest {
 
         inverter = inverters.get(0);
         LOGGER.info("Inverter {} logging on... ", inverter.getIP());
-        inverter.logon();
+        inverter.logon(UserGroup.USER, "Sma12345!");
         LOGGER.info("Inverter {} logged on. ", inverter.getIP());
     }
 
@@ -217,10 +219,10 @@ public class SBFspotTest {
     public void testDayData() throws IOException {
         Map<LocalDateTime, DoubleSummaryStatistics> dayData = inverter.getInverterData(new DayDataRequest()).stream()
                 .collect(Collectors.groupingBy(d -> d.getDt().truncatedTo(ChronoUnit.HOURS),
-                        Collectors.summarizingDouble(d -> DoubleValue.readValue(d.getPower()))));
+                        Collectors.summarizingDouble(d -> DoubleValue.readValue(d.getPower()).doubleValue())));
         for (LocalDateTime dt : new TreeSet<>(dayData.keySet())) {
             if (dayData.get(dt).getAverage() > 0.0) {
-                LOGGER.info(dt + ": " + new Power(dayData.get(dt).getAverage()));
+                LOGGER.info(dt + ": " + new Power(BigDecimal.valueOf(dayData.get(dt).getAverage())));
             }
         }
     }

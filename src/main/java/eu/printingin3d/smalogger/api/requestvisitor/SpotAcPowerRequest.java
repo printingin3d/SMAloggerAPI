@@ -6,7 +6,7 @@ import eu.printingin3d.smalogger.api.inverter.LriDef;
 public class SpotAcPowerRequest extends AbstractInverterThreeIntRequest<Power> {
     public SpotAcPowerRequest() {
         super(LriDef.GridMsWphsA, LriDef.GridMsWphsB, LriDef.GridMsWphsC,
-                x -> new Power(x));
+                x -> ConversionConstants.convertPower(x));
     }
 
     @Override

@@ -1,12 +1,14 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
+import static eu.printingin3d.smalogger.api.requestvisitor.ConversionConstants.convertPower;
+
 import eu.printingin3d.physics.Power;
 import eu.printingin3d.smalogger.api.inverter.LriDef;
 
 public class SpotAcTotalPowerRequest extends AbstractInverterOneIntRequest<Power> {
 
     public SpotAcTotalPowerRequest() {
-        super(LriDef.GridMsTotW, x -> new Power(x));
+        super(LriDef.GridMsTotW, x -> convertPower(x));
     }
 
     @Override

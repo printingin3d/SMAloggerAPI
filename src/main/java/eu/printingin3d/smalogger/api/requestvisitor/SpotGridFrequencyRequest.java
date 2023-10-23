@@ -6,7 +6,7 @@ import eu.printingin3d.smalogger.api.inverter.LriDef;
 public class SpotGridFrequencyRequest extends AbstractInverterOneIntRequest<Frequency> {
 
     public SpotGridFrequencyRequest() {
-        super(LriDef.GridMsHz, x -> new Frequency(x * 0.01));
+        super(LriDef.GridMsHz, ConversionConstants::convertFrequency);
     }
 
     @Override

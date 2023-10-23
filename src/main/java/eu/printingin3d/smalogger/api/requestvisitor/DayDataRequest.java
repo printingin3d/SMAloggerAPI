@@ -1,5 +1,7 @@
 package eu.printingin3d.smalogger.api.requestvisitor;
 
+import static eu.printingin3d.smalogger.api.requestvisitor.ConversionConstants.convertEnergy;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
@@ -50,9 +52,9 @@ public class DayDataRequest extends AbstractInverterRequest<List<DayDataItem>> {
         for (int ix = 40; ix < bb.limit() - 4; ix += 12) {
             bb.position(ix);
             LocalDateTime dt = LocalDateTime.ofEpochSecond(bb.getInt(), 0, offset);
-            Energy value = Energy.fromWattHour(bb.getLong());
+            Energy value = convertEnergy(bb.getLong());
 
-            Power power = new Power(0.0);
+            Power power = Power.ZERO;
             if (!items.isEmpty()) {
                 DayDataItem last = items.get(items.size() - 1);
                 Time d = Time.difference(last.getDt(), dt);
